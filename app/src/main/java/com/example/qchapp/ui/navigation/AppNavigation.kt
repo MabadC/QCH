@@ -67,6 +67,11 @@ fun AppNavigation() {
 
         composable(Routes.LOGIN) {
             LoginScreen(
+
+                onBackClick = {
+                    navController.popBackStack()
+                },
+
                 onLoginSuccess = {
                     navController.navigate(
                         Routes.SEARCH

@@ -31,7 +31,8 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
-    onForgotPasswordClick: () -> Unit = {}
+    onForgotPasswordClick: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -54,15 +55,16 @@ fun LoginScreen(
         // Flecha atrás
 
         Image(
-            painter = painterResource(id = R.drawable.flecha),
+            painter = painterResource(
+                id = R.drawable.flecha
+            ),
             contentDescription = "Volver",
 
             modifier = Modifier
-                .padding(
-                    top = Dimens.BackArrowPadding,
-                    start = Dimens.BackArrowPadding
-                )
-                .size(Dimens.BackArrowSize)
+                .size(40.dp)
+                .clickable {
+                    onBackClick()
+                }
         )
 
         Column(
