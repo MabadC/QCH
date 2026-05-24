@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.qchapp.ui.screens.*
+import com.google.firebase.auth.FirebaseAuth
 
 object Routes {
 
@@ -33,9 +34,21 @@ fun AppNavigation() {
 
     val navController = rememberNavController()
 
+    val currentUser = FirebaseAuth
+        .getInstance()
+        .currentUser
+
+    val startDestination =
+
+        if (currentUser != null)
+            Routes.SEARCH
+        else
+            Routes.WELCOME
+
+
     NavHost(
         navController = navController,
-        startDestination = Routes.WELCOME
+        startDestination = startDestination
     ) {
 
         composable(Routes.WELCOME) {
@@ -58,6 +71,12 @@ fun AppNavigation() {
                     navController.navigate(
                         Routes.SEARCH
                     )
+                },
+
+                onForgotPasswordClick = {
+                    navController.navigate(
+                        Routes.PASSWORD_RECOVERY
+                    )
                 }
             )
         }
@@ -73,7 +92,14 @@ fun AppNavigation() {
         }
 
         composable(Routes.PASSWORD_RECOVERY) {
-            PasswordRecoveryScreen()
+            PasswordRecoveryScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onLoginClick = {
+                    navController.navigate(Routes.LOGIN)
+                }
+            )
         }
 
         composable(Routes.SEARCH) {
@@ -179,8 +205,14 @@ fun AppNavigation() {
                     navController.navigate(Routes.CHANGE_PASSWORD)
                 },
                 onLogoutClick = {
+
+                    FirebaseAuth.getInstance().signOut()
+
                     navController.navigate(Routes.WELCOME) {
+
                         popUpTo(0)
+
+                        launchSingleTop = true
                     }
                 }
             )

@@ -24,12 +24,14 @@ import com.example.qchapp.ui.components.QCHTextField
 import com.example.qchapp.ui.theme.*
 //Firebase
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.platform.LocalContext
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit = {}
+    onLoginSuccess: () -> Unit = {},
+    onForgotPasswordClick: () -> Unit = {}
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -148,7 +150,10 @@ fun LoginScreen(
             Text(
                 text = "¿Has olvidado tu contraseña?",
                 color = QCHGreen,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable {
+                    onForgotPasswordClick()
+                }
             )
 
             Spacer(
