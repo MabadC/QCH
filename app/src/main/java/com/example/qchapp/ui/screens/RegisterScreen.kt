@@ -23,12 +23,14 @@ import com.example.qchapp.ui.components.QCHTextField
 import com.example.qchapp.ui.theme.*
 //Firebase
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.platform.LocalContext
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun RegisterScreen(
-    onRegisterSuccess: () -> Unit = {}
+    onRegisterSuccess: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
 
     var name by remember { mutableStateOf("") }
@@ -50,14 +52,16 @@ fun RegisterScreen(
         // Flecha atrás
 
         Image(
-            painter = painterResource(id = R.drawable.flecha),
+            painter = painterResource(
+                id = R.drawable.flecha
+            ),
             contentDescription = "Volver",
+
             modifier = Modifier
-                .padding(
-                    top = Dimens.BackArrowPadding,
-                    start = Dimens.BackArrowPadding
-                )
-                .size(Dimens.BackArrowSize)
+                .size(40.dp)
+                .clickable {
+                    onBackClick()
+                }
         )
 
         Column(

@@ -88,6 +88,11 @@ fun AppNavigation() {
 
         composable(Routes.REGISTER) {
             RegisterScreen(
+                
+                onBackClick = {
+                    navController.popBackStack()
+                },
+
                 onRegisterSuccess = {
                     navController.navigate(
                         Routes.SEARCH
