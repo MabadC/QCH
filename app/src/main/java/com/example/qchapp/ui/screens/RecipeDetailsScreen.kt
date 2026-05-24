@@ -1,36 +1,54 @@
 package com.example.qchapp.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.qchapp.R
+import com.example.qchapp.data.RecipeRepository
 import com.example.qchapp.ui.components.BottomBar
-import com.example.qchapp.ui.theme.*
-import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.filled.HourglassBottom
 import com.example.qchapp.ui.components.RecipeInfo
+import com.example.qchapp.ui.theme.*
 
 @Composable
-fun RecipeDetailsScreen() {
+fun RecipeDetailsScreen(
+    recipeId: Int = 1,
+    onBackClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {},
+    onFavoritesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
+    onSaveClick: () -> Unit = {}
+) {
+
+    val recipe = RecipeRepository.recipes.find {
+        it.id == recipeId
+    } ?: RecipeRepository.recipes.first()
 
     Scaffold(
         bottomBar = {
             BottomBar(
-                selectedItem = "search"
+                selectedItem = "search",
+                onSearchClick = onSearchClick,
+                onFavoritesClick = onFavoritesClick,
+                onProfileClick = onProfileClick
             )
         }
-
     ) { paddingValues ->
 
         Column(
@@ -45,11 +63,10 @@ fun RecipeDetailsScreen() {
                 modifier = Modifier.height(36.dp)
             )
 
-            // Cabecera
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Image(
@@ -57,7 +74,11 @@ fun RecipeDetailsScreen() {
                         id = R.drawable.flecha
                     ),
                     contentDescription = "Volver",
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clickable {
+                            onBackClick()
+                        }
                 )
 
                 Image(
@@ -69,10 +90,18 @@ fun RecipeDetailsScreen() {
                 )
 
                 Icon(
-                    imageVector = Icons.Default.BookmarkBorder,
+                    imageVector =
+                        if (recipe.isSaved)
+                            Icons.Default.Bookmark
+                        else
+                            Icons.Default.BookmarkBorder,
                     contentDescription = "Guardar",
                     tint = QCHGreen,
-                    modifier = Modifier.size(38.dp)
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clickable {
+                            onSaveClick()
+                        }
                 )
             }
 
@@ -80,14 +109,12 @@ fun RecipeDetailsScreen() {
                 modifier = Modifier.height(20.dp)
             )
 
-            // Imagen receta
-
             Image(
                 painter = painterResource(
-                    id = R.drawable.recipe_placeholder
+                    id = recipe.image
                 ),
-                contentDescription = "Imagen receta",
-
+                contentDescription = recipe.title,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
@@ -98,7 +125,7 @@ fun RecipeDetailsScreen() {
             )
 
             Text(
-                text = "Ensalada de lentejas con verduras",
+                text = recipe.title,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -113,17 +140,17 @@ fun RecipeDetailsScreen() {
 
                 RecipeInfo(
                     icon = Icons.Default.HourglassBottom,
-                    text = "15 minutos"
+                    text = recipe.time
                 )
 
                 RecipeInfo(
                     icon = Icons.AutoMirrored.Filled.Help,
-                    text = "fácil"
+                    text = recipe.difficulty
                 )
 
                 RecipeInfo(
                     icon = Icons.Default.Groups,
-                    text = "2 personas"
+                    text = recipe.servings
                 )
             }
 
@@ -142,14 +169,11 @@ fun RecipeDetailsScreen() {
             )
 
             Text(
-                text = """
-• 1 bote de lentejas cocidas
-• 2 huevos
-• 2 zanahorias
-• 10 tomates cherry
-• Aceite de oliva
-• Sal
-                """.trimIndent()
+                text = recipe.ingredients.joinToString(
+                    separator = "\n"
+                ) {
+                    "• $it"
+                }
             )
 
             Spacer(
@@ -167,14 +191,11 @@ fun RecipeDetailsScreen() {
             )
 
             Text(
-                text =
-                    "Poner a hervir los huevos durante 8 minutos.\n\n" +
-                            "Escurrir las lentejas y mezclar.\n\n" +
-                            "Añadir verduras y servir."
+                text = recipe.description
             )
 
             Spacer(
-                modifier = Modifier.height(30.dp)
+                modifier = Modifier.height(80.dp)
             )
         }
     }

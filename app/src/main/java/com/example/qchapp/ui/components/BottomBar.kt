@@ -1,6 +1,6 @@
 package com.example.qchapp.ui.components
 
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.example.qchapp.ui.theme.QCHGreen
 
 @Composable
@@ -19,7 +18,7 @@ fun BottomBar(
     onProfileClick: () -> Unit = {}
 ) {
     NavigationBar(
-        modifier = Modifier.height(62.dp),
+        modifier = Modifier.navigationBarsPadding(),
         containerColor = MaterialTheme.colorScheme.background
     ) {
         NavigationBarItem(

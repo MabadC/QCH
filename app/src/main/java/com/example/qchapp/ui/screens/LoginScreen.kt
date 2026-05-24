@@ -22,14 +22,26 @@ import com.example.qchapp.R
 import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.components.QCHTextField
 import com.example.qchapp.ui.theme.*
+//Firebase
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onLoginSuccess: () -> Unit = {}
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     var passwordVisible by remember {
+        mutableStateOf(false)
+    }
+    val context = LocalContext.current
+    val auth = FirebaseAuth.getInstance()
+
+    var loading by remember {
         mutableStateOf(false)
     }
 
@@ -146,12 +158,67 @@ fun LoginScreen() {
             // Botón principal
 
             QCHButton(
-                text = "INICIAR SESIÓN",
+
+                text =
+                    if (loading)
+                        "INICIANDO..."
+                    else
+                        "INICIAR SESIÓN",
+
                 color = QCHGreen,
-                onClick = {},
+
+                onClick = {
+
+                    if (
+                        email.isBlank() ||
+                        password.isBlank()
+                    ) {
+
+                        Toast.makeText(
+                            context,
+                            "Completa todos los campos",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return@QCHButton
+                    }
+
+                    loading = true
+
+                    auth.signInWithEmailAndPassword(
+                        email,
+                        password
+                    )
+                        .addOnCompleteListener { task ->
+
+                            loading = false
+
+                            if (task.isSuccessful) {
+
+                                Toast.makeText(
+                                    context,
+                                    "Sesión iniciada",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                onLoginSuccess()
+
+                            } else {
+
+                                Toast.makeText(
+                                    context,
+                                    task.exception?.message
+                                        ?: "Error al iniciar sesión",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                },
+
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Dimens.ButtonHeight)
+
             )
 
             Spacer(

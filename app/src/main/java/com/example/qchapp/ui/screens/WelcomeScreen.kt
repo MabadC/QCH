@@ -23,7 +23,13 @@ import com.example.qchapp.ui.theme.QCHGreen
 import com.example.qchapp.ui.theme.QCHOrange
 
 @Composable
-fun WelcomeScreen() {
+fun WelcomeScreen(
+
+    onLoginClick: () -> Unit = {},
+    onRegisterClick: () -> Unit = {},
+    onGuestClick: () -> Unit = {}
+
+) {
 
     Column(
         modifier = Modifier
@@ -85,7 +91,7 @@ fun WelcomeScreen() {
         QCHButton(
             text = "INICIAR SESIÓN",
             color = QCHGreen,
-            onClick = {},
+            onClick = onLoginClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(Dimens.ButtonHeight)
@@ -100,12 +106,11 @@ fun WelcomeScreen() {
         QCHButton(
             text = "REGISTRARSE",
             color = QCHOrange,
-            onClick = {},
+            onClick = onRegisterClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(Dimens.ButtonHeight)
         )
-
         Spacer(
             modifier = Modifier.height(Dimens.MediumSpacing)
         )
@@ -113,19 +118,15 @@ fun WelcomeScreen() {
         // Botón usuario anónimo
 
         OutlinedButton(
-            onClick = {},
-
+            onClick = onGuestClick,
             shape = RoundedCornerShape(10.dp),
-
             border = BorderStroke(
                 1.dp,
                 QCHGray
             ),
-
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = QCHGray
             ),
-
             modifier = Modifier
                 .fillMaxWidth()
                 .height(Dimens.AnonymousButtonHeight)

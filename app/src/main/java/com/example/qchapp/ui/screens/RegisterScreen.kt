@@ -21,15 +21,27 @@ import com.example.qchapp.R
 import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.components.QCHTextField
 import com.example.qchapp.ui.theme.*
+//Firebase
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit = {}
+) {
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var checked by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val auth = FirebaseAuth.getInstance()
+
+    var loading by remember {
+        mutableStateOf(false)
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -160,9 +172,74 @@ fun RegisterScreen() {
             // Botón crear cuenta
 
             QCHButton(
-                text = "CREAR CUENTA",
+                text =
+                    if (loading)
+                        "CREANDO..."
+                    else
+                        "CREAR CUENTA",
+
                 color = QCHGreen,
-                onClick = {},
+
+                onClick = {
+
+                    if (
+                        name.isBlank() ||
+                        email.isBlank() ||
+                        password.isBlank()
+                    ) {
+
+                        Toast.makeText(
+                            context,
+                            "Completa todos los campos",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return@QCHButton
+                    }
+
+                    if (!checked) {
+
+                        Toast.makeText(
+                            context,
+                            "Acepta los términos",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return@QCHButton
+                    }
+
+                    loading = true
+
+                    auth.createUserWithEmailAndPassword(
+                        email,
+                        password
+                    )
+                        .addOnCompleteListener { task ->
+
+                            loading = false
+
+                            if (task.isSuccessful) {
+
+                                Toast.makeText(
+                                    context,
+                                    "Cuenta creada correctamente",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                onRegisterSuccess()
+
+                            } else {
+
+                                Toast.makeText(
+                                    context,
+                                    task.exception?.message
+                                        ?: "Error al registrar usuario",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                },
+
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Dimens.ButtonHeight)

@@ -18,13 +18,26 @@ import com.example.qchapp.ui.components.BottomBar
 import com.example.qchapp.ui.components.ProfileOption
 import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.theme.*
+import androidx.compose.foundation.clickable
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    onBackClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {},
+    onFavoritesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
+    onChangePasswordClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {}
+) {
 
     Scaffold(
         bottomBar = {
-            BottomBar(selectedItem = "profile")
+            BottomBar(
+                selectedItem = "profile",
+                onSearchClick = onSearchClick,
+                onFavoritesClick = onFavoritesClick,
+                onProfileClick = onProfileClick
+            )
         }
     ) { paddingValues ->
 
@@ -45,7 +58,11 @@ fun ProfileScreen() {
                 Image(
                     painter = painterResource(id = R.drawable.flecha),
                     contentDescription = "Volver",
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clickable {
+                            onBackClick()
+                        }
                 )
             }
 
@@ -90,7 +107,8 @@ fun ProfileScreen() {
 
             ProfileOption(
                 icon = Icons.Default.Lock,
-                text = "Cambiar contraseña"
+                text = "Cambiar contraseña",
+                onClick = onChangePasswordClick
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -98,7 +116,7 @@ fun ProfileScreen() {
             QCHButton(
                 text = "Cerrar sesión",
                 color = QCHOrange,
-                onClick = {},
+                onClick = onLogoutClick,
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .height(Dimens.ButtonHeight)

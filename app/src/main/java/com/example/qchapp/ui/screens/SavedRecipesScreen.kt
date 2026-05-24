@@ -1,6 +1,7 @@
 package com.example.qchapp.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,43 +14,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.qchapp.R
+import com.example.qchapp.data.RecipeRepository
 import com.example.qchapp.ui.components.BottomBar
 import com.example.qchapp.ui.components.RecipePreview
 import com.example.qchapp.ui.theme.*
 
 @Composable
-fun SavedRecipesScreen() {
+    fun SavedRecipesScreen(
+       onBackClick: () -> Unit = {},
+       onSearchClick: () -> Unit = {},
+       onFavoritesClick: () -> Unit = {},
+       onProfileClick: () -> Unit = {},
+       onRecipeClick: (Int) -> Unit = {}
+    ) {
 
-    val recipes = listOf(
-
-        RecipePreviewData(
-            "Ensalada de garbanzos y huevo",
-            "15 minutos",
-            "fácil",
-            true
-        ),
-
-        RecipePreviewData(
-            "PokeBowl mediterráneo",
-            "15 minutos",
-            "fácil",
-            true
-        ),
-
-        RecipePreviewData(
-            "Ensalada variada con huevo duro",
-            "15 minutos",
-            "fácil",
-            true
-        )
-
-    )
+    val recipes = RecipeRepository.recipes.filter {
+        it.isSaved
+    }
 
     Scaffold(
 
         bottomBar = {
             BottomBar(
-                selectedItem = "favorites"
+                selectedItem = "favorites",
+                onSearchClick = onSearchClick,
+                onFavoritesClick = onFavoritesClick,
+                onProfileClick = onProfileClick
             )
         }
 
@@ -73,7 +63,12 @@ fun SavedRecipesScreen() {
                     id = R.drawable.flecha
                 ),
                 contentDescription = "Volver",
-                modifier = Modifier.size(32.dp)
+
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable {
+                        onBackClick()
+                    }
             )
 
             Spacer(
@@ -113,11 +108,18 @@ fun SavedRecipesScreen() {
                 items(recipes) { recipe ->
 
                     RecipePreview(
+
                         title = recipe.title,
                         time = recipe.time,
                         difficulty = recipe.difficulty,
+                        image = recipe.image,
                         isSaved = true,
-                        showDelete = true
+                        showDelete = true,
+
+                        onClick = {
+                            onRecipeClick(recipe.id)
+                        }
+
                     )
 
                 }

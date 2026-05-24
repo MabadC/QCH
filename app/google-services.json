@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "213504081118",
+    "project_id": "qch-app-9f234",
+    "storage_bucket": "qch-app-9f234.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:213504081118:android:3679ce443fda19a8ab164f",
+        "android_client_info": {
+          "package_name": "com.example.qchapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZjQluwIFFq3oP6z2cCrEFUrTxWjyGnFQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
