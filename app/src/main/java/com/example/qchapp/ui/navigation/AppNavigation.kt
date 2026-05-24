@@ -88,7 +88,7 @@ fun AppNavigation() {
 
         composable(Routes.REGISTER) {
             RegisterScreen(
-                
+
                 onBackClick = {
                     navController.popBackStack()
                 },
@@ -229,7 +229,11 @@ fun AppNavigation() {
         }
 
         composable(Routes.CHANGE_PASSWORD) {
-            ChangePasswordScreen()
+            ChangePasswordScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable(Routes.NETWORK_ERROR) {

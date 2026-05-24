@@ -17,9 +17,12 @@ import com.example.qchapp.R
 import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.components.QCHTextField
 import com.example.qchapp.ui.theme.*
+import androidx.compose.foundation.clickable
 
 @Composable
-fun ChangePasswordScreen() {
+fun ChangePasswordScreen(
+    onBackClick: () -> Unit = {}
+) {
 
     var currentPassword by remember {
         mutableStateOf("")
@@ -65,10 +68,13 @@ fun ChangePasswordScreen() {
                 painter = painterResource(
                     id = R.drawable.flecha
                 ),
-
                 contentDescription = "Volver",
 
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable {
+                        onBackClick()
+                    }
             )
         }
 
