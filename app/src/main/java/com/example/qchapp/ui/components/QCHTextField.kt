@@ -18,7 +18,7 @@ fun QCHTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    icon: ImageVector,
+    icon: ImageVector? = null,
     modifier: Modifier = Modifier,
     isPassword: Boolean = false,
     passwordVisible: Boolean = false,
@@ -34,11 +34,13 @@ fun QCHTextField(
             Text(placeholder)
         },
 
-        leadingIcon = {
-            Icon(
-                icon,
-                contentDescription = null
-            )
+        leadingIcon = icon?.let {
+            {
+                Icon(
+                    imageVector = it,
+                    contentDescription = null
+                )
+            }
         },
 
         trailingIcon = {
