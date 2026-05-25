@@ -18,6 +18,10 @@ import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.components.QCHTextField
 import com.example.qchapp.ui.theme.*
 import androidx.compose.foundation.clickable
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ChangePasswordScreen(
@@ -47,6 +51,8 @@ fun ChangePasswordScreen(
     var confirmVisible by remember {
         mutableStateOf(false)
     }
+
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -174,7 +180,65 @@ fun ChangePasswordScreen(
         QCHButton(
             text = "Guardar cambios",
             color = QCHGreen,
-            onClick = {},
+            onClick = {
+
+                val auth = FirebaseAuth.getInstance()
+                val user = auth.currentUser
+                val credential = EmailAuthProvider.getCredential(
+                    user?.email ?: "",
+                    currentPassword
+                )
+
+                if (currentPassword.isBlank() || newPassword.isBlank() || confirmPassword.isBlank()) {
+                    Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
+                    return@QCHButton
+                }
+
+                if (newPassword != confirmPassword) {
+                    Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                    return@QCHButton
+                }
+
+                if (newPassword.length < 6) {
+                    Toast.makeText(context, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+                    return@QCHButton
+                }
+
+                user?.reauthenticate(credential)
+                    ?.addOnCompleteListener { reauthTask ->
+
+                        if (reauthTask.isSuccessful) {
+
+                            user.updatePassword(newPassword)
+                                .addOnCompleteListener { updateTask ->
+
+                                    if (updateTask.isSuccessful) {
+                                        Toast.makeText(
+                                            context,
+                                            "Contraseña actualizada correctamente",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+
+                                        onBackClick()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            updateTask.exception?.message ?: "Error al actualizar contraseña",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "La contraseña actual no es correcta",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+
+            },
 
             modifier = Modifier
                 .fillMaxWidth(0.9f)
