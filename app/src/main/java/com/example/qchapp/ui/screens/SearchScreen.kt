@@ -35,6 +35,7 @@ import com.example.qchapp.ui.theme.Dimens
 import com.example.qchapp.ui.theme.QCHGreen
 import kotlinx.coroutines.launch
 import com.example.qchapp.BuildConfig
+import com.example.qchapp.data.remote.ApiRecipeSearchState
 
 
 @Composable
@@ -242,16 +243,33 @@ fun SearchScreen(
                                 return@launch
                             }
 
-                            val query =
-                                selectedIngredients.firstOrNull()
-                                    ?: restricted.first()
+                            if (selectedIngredients.isEmpty()) {
+                                Toast.makeText(
+                                    context,
+                                    "Elige al menos un ingrediente para buscar recetas",
+                                    Toast.LENGTH_LONG
+                                ).show()
 
-                            val response =
-                                TestRepository.searchRecipes(query)
+                                return@launch
+                            }
+
+                            val response = TestRepository.searchRecipes(
+                                ingredients = selectedIngredients,
+                                restrictedIngredients = restricted,
+                                number = ApiRecipeSearchState.PAGE_SIZE,
+                                offset = 0
+                            )
+
+                            ApiRecipeSearchState.recipes = response.results
+                            ApiRecipeSearchState.ingredients = selectedIngredients
+                            ApiRecipeSearchState.restrictedIngredients = restricted
+                            ApiRecipeSearchState.offset = ApiRecipeSearchState.PAGE_SIZE
+
+                            onSearchRecipesClick()
 
                             Toast.makeText(
                                 context,
-                                "Recetas recibidas: ${response.results.size}",
+                                "Recetas encontradas: ${response.results.size}",
                                 Toast.LENGTH_LONG
                             ).show()
 
