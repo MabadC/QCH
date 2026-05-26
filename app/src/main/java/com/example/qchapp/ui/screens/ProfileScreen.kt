@@ -19,6 +19,7 @@ import com.example.qchapp.ui.components.ProfileOption
 import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.theme.*
 import androidx.compose.foundation.clickable
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ProfileScreen(
@@ -29,6 +30,12 @@ fun ProfileScreen(
     onChangePasswordClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {}
 ) {
+    // Firebase para mostrar nombre de usuario y email
+    val user = FirebaseAuth.getInstance().currentUser
+
+    val userName = user?.displayName ?: "Usuario QCH"
+
+    val userEmail = user?.email ?: "Sin e-mail"
 
     Scaffold(
         bottomBar = {
@@ -92,13 +99,13 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Usuario QCH",
+                text = userName,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "usuario@qch.com",
+                text = userEmail,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )

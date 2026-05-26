@@ -1,23 +1,41 @@
 package com.example.qchapp.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.qchapp.R
+import com.example.qchapp.data.remote.TestRepository
 import com.example.qchapp.ui.components.BottomBar
 import com.example.qchapp.ui.components.IngredientField
 import com.example.qchapp.ui.components.QCHButton
-import com.example.qchapp.ui.theme.*
-import com.example.qchapp.data.RecipeSearchState
+import com.example.qchapp.ui.theme.Dimens
+import com.example.qchapp.ui.theme.QCHGreen
+import kotlinx.coroutines.launch
+import com.example.qchapp.BuildConfig
+
 
 @Composable
 fun SearchScreen(
@@ -34,6 +52,9 @@ fun SearchScreen(
     var restrictedIngredients by remember {
         mutableStateOf(listOf(""))
     }
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         bottomBar = {
@@ -165,7 +186,8 @@ fun SearchScreen(
             Spacer(
                 modifier = Modifier.height(40.dp)
             )
-
+/*
+// inhabilito para probar la API
             QCHButton(
                 text = "Buscar recetas",
                 color = QCHGreen,
@@ -184,7 +206,73 @@ fun SearchScreen(
                     .fillMaxWidth(0.9f)
                     .height(Dimens.ButtonHeight)
             )
+            */
 
+            // prueba busqueda API
+
+            QCHButton(
+                text = "Buscar recetas",
+                color = QCHGreen,
+
+                onClick = {
+
+                    coroutineScope.launch {
+
+                        try {
+
+                            val selectedIngredients = ingredients
+                                .map { it.trim() }
+                                .filter { it.isNotBlank() }
+
+                            val restricted = restrictedIngredients
+                                .map { it.trim() }
+                                .filter { it.isNotBlank() }
+
+                            if (
+                                selectedIngredients.isEmpty() &&
+                                restricted.isEmpty()
+                            ) {
+
+                                Toast.makeText(
+                                    context,
+                                    "No has elegido ni restringido ningún ingrediente",
+                                    Toast.LENGTH_LONG
+                                ).show()
+
+                                return@launch
+                            }
+
+                            val query =
+                                selectedIngredients.firstOrNull()
+                                    ?: restricted.first()
+
+                            val response =
+                                TestRepository.searchRecipes(query)
+
+                            Toast.makeText(
+                                context,
+                                "Recetas recibidas: ${response.results.size}",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                            onSearchRecipesClick()
+
+                        } catch (e: Exception) {
+
+                            Toast.makeText(
+                                context,
+                                "Error API: ${e.message}\nKey:${BuildConfig.SPOONACULAR_API_KEY.length}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                },
+
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .height(Dimens.ButtonHeight)
+            )
+            // Fin prueba búsqueda API
             Spacer(
                 modifier = Modifier.height(12.dp)
             )
