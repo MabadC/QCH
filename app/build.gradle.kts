@@ -15,7 +15,7 @@ val spoonacularApiKey: String =
 
 android {
     namespace = "com.example.qchapp"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.qchapp"
@@ -83,4 +83,5 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.coil.compose)
 }

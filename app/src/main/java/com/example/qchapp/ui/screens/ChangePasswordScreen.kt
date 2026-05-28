@@ -1,6 +1,5 @@
 package com.example.qchapp.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -9,17 +8,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.qchapp.R
 import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.components.QCHTextField
 import com.example.qchapp.ui.theme.*
-import androidx.compose.foundation.clickable
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import com.example.qchapp.ui.components.TopBarLogo
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 
@@ -66,32 +63,8 @@ fun ChangePasswordScreen(
             modifier = Modifier.height(36.dp)
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-
-            Image(
-                painter = painterResource(
-                    id = R.drawable.flecha
-                ),
-                contentDescription = "Volver",
-
-                modifier = Modifier
-                    .size(32.dp)
-                    .clickable {
-                        onBackClick()
-                    }
-            )
-        }
-
-        Image(
-            painter = painterResource(
-                id = R.drawable.qch_logo
-            ),
-
-            contentDescription = "Logo",
-
-            modifier = Modifier.size(90.dp)
+        TopBarLogo(
+            onBackClick = onBackClick
         )
 
         Spacer(

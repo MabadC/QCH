@@ -1,6 +1,5 @@
 package com.example.qchapp.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -8,17 +7,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.qchapp.R
 import com.example.qchapp.ui.components.BottomBar
 import com.example.qchapp.ui.components.ProfileOption
 import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.theme.*
-import androidx.compose.foundation.clickable
+import com.example.qchapp.ui.components.TopBar
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -62,22 +59,11 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.flecha),
-                    contentDescription = "Volver",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clickable {
-                            onBackClick()
-                        }
+                TopBar(
+                    onBackClick = onBackClick
                 )
             }
 
-            Image(
-                painter = painterResource(id = R.drawable.qch_logo),
-                contentDescription = "QCH Logo",
-                modifier = Modifier.size(90.dp)
-            )
 
             Spacer(modifier = Modifier.height(12.dp))
 

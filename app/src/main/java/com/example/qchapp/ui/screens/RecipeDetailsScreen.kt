@@ -1,7 +1,6 @@
 package com.example.qchapp.ui.screens
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,11 +38,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.qchapp.R
 import com.example.qchapp.data.remote.ApiRecipeDetail
 import com.example.qchapp.data.remote.TestRepository
 import com.example.qchapp.ui.components.BottomBar
 import com.example.qchapp.ui.components.RecipeInfo
+import com.example.qchapp.ui.components.TopBar
 import com.example.qchapp.ui.theme.Dimens
 import com.example.qchapp.ui.theme.QCHGreen
 import kotlinx.coroutines.launch
@@ -111,20 +112,10 @@ fun RecipeDetailsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Image(
-                    painter = painterResource(id = R.drawable.flecha),
-                    contentDescription = "Volver",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clickable {
-                            onBackClick()
-                        }
-                )
-
-                Image(
-                    painter = painterResource(id = R.drawable.qch_logo),
-                    contentDescription = "Logo",
-                    modifier = Modifier.size(70.dp)
+                TopBar(
+                    onBackClick = onBackClick,
+                    showSaveIcon = true,
+                    onSaveClick = onSaveClick
                 )
 
                 Icon(
@@ -171,15 +162,19 @@ fun RecipeDetailsScreen(
 
                     } else {
 
-                        Image(
-                            painter = painterResource(
+                        AsyncImage(
+                            model = currentRecipe.image,
+                            contentDescription = currentRecipe.title,
+                            placeholder = painterResource(
                                 id = R.drawable.recipe_placeholder
                             ),
-                            contentDescription = currentRecipe.title,
-                            contentScale = ContentScale.Fit,
+                            error = painterResource(
+                                id = R.drawable.recipe_placeholder
+                            ),
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp)
+                                .height(220.dp)
                         )
 
                         Spacer(

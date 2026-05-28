@@ -25,6 +25,7 @@ import com.example.qchapp.ui.theme.*
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.platform.LocalContext
+import com.example.qchapp.ui.components.TopBarLogo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 
@@ -50,19 +51,8 @@ fun RegisterScreen(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        // Flecha atrás
-
-        Image(
-            painter = painterResource(
-                id = R.drawable.flecha
-            ),
-            contentDescription = "Volver",
-
-            modifier = Modifier
-                .size(40.dp)
-                .clickable {
-                    onBackClick()
-                }
+        TopBarLogo(
+            onBackClick = onBackClick
         )
 
         Column(
@@ -71,18 +61,6 @@ fun RegisterScreen(
                 .padding(horizontal = Dimens.ScreenPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Logo
-
-            Image(
-                painter = painterResource(id = R.drawable.qch_logo),
-                contentDescription = "QCH Logo",
-                modifier = Modifier.size(120.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             // Nombre App - QCH
 

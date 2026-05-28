@@ -132,7 +132,10 @@ fun AppNavigation() {
         composable(Routes.RESULTS) {
             ResultsScreen(
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.popBackStack(
+                        route = Routes.SEARCH,
+                        inclusive = false
+                    )
                 },
                 onSearchClick = {
                     navController.navigate(Routes.SEARCH)

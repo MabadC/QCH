@@ -12,12 +12,17 @@ object Dimens {
 
     // Tamaños
     val LogoSize = 150.dp
+    val TopBarLogoSize = 70.dp
+
     val ButtonHeight = 58.dp
     val AnonymousButtonHeight = 68.dp
 
     // Flecha navegación
     val BackArrowSize = 40.dp
     val BackArrowPadding = 20.dp
+
+    // TopBars
+    val TopBarTopPadding = 36.dp
 
     // Márgenes pantalla
     val ScreenPadding = 40.dp
