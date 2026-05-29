@@ -3,7 +3,6 @@ package com.example.qchapp.ui.screens
 //Firebase
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,26 +47,14 @@ fun LoginScreen(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
-    var passwordVisible by remember {
-        mutableStateOf(false)
-    }
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
 
     var loading by remember {
         mutableStateOf(false)
     }
-
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-
-        TopBarLogo(
-            onBackClick = onBackClick
-        )
-    }
-
 
     Column(
         modifier = Modifier
@@ -76,6 +63,10 @@ fun LoginScreen(
 
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        TopBarLogo(
+            onBackClick = onBackClick
+        )
 
         Spacer(
             modifier = Modifier.height(Dimens.SmallSpacing)

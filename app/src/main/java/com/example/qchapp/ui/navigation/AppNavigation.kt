@@ -22,6 +22,10 @@ object Routes {
     const val PROFILE = "profile"
     const val CHANGE_PASSWORD = "change_password"
 
+    const val EDIT_USERNAME = "edit_username"
+
+    const val DELETE_ACCOUNT = "delete_account"
+
     const val NETWORK_ERROR = "network_error"
 
     fun recipeDetails(recipeId: Int): String {
@@ -217,14 +221,23 @@ fun AppNavigation() {
                 onChangePasswordClick = {
                     navController.navigate(Routes.CHANGE_PASSWORD)
                 },
+                onEditUsernameClick = {
+                    navController.navigate(Routes.EDIT_USERNAME)
+                },
+                onDeleteAccountClick = {
+                    navController.navigate(Routes.DELETE_ACCOUNT)
+                },
+                onLoginClick = {
+                    navController.navigate(Routes.LOGIN)
+                },
+                onRegisterClick = {
+                    navController.navigate(Routes.REGISTER)
+                },
                 onLogoutClick = {
-
                     FirebaseAuth.getInstance().signOut()
 
                     navController.navigate(Routes.WELCOME) {
-
                         popUpTo(0)
-
                         launchSingleTop = true
                     }
                 }
@@ -238,6 +251,29 @@ fun AppNavigation() {
                 }
             )
         }
+
+        composable(Routes.EDIT_USERNAME) {
+            EditUsernameScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Routes.DELETE_ACCOUNT) {
+            DeleteAccountScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onAccountDeleted = {
+                    navController.navigate(Routes.WELCOME) {
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
 
         composable(Routes.NETWORK_ERROR) {
             NetworkErrorScreen()

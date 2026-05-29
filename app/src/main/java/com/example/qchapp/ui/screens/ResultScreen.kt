@@ -1,32 +1,52 @@
 package com.example.qchapp.ui.screens
 
-import androidx.compose.foundation.layout.*
+import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.example.qchapp.data.remote.ApiRecipeSearchState
-import com.example.qchapp.ui.components.BottomBar
-import com.example.qchapp.ui.components.RecipePreview
-import com.example.qchapp.ui.theme.Dimens
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import android.widget.Toast
-import com.example.qchapp.data.remote.TestRepository
-import kotlinx.coroutines.launch
-import com.example.qchapp.ui.theme.QCHGreen
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.qchapp.data.remote.ApiRecipeSearchState
+import com.example.qchapp.data.remote.TestRepository
+import com.example.qchapp.ui.components.BottomBar
+import com.example.qchapp.ui.components.RecipePreview
 import com.example.qchapp.ui.components.TopBar
+import com.example.qchapp.ui.theme.Dimens
+import com.example.qchapp.ui.theme.QCHGreen
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.Image
+import com.example.qchapp.R
+import com.example.qchapp.ui.components.QCHButton
 
 @Composable
 fun ResultsScreen(
@@ -74,112 +94,159 @@ fun ResultsScreen(
                 onBackClick = onBackClick
             )
 
-            Spacer(
-                modifier = Modifier.height(12.dp)
-            )
+            if (recipes.isEmpty()) {
 
-            Spacer(
-                modifier = Modifier.height(24.dp)
-            )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
 
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-
-                items(recipes) { recipe ->
-
-                    val minutes = recipe.readyInMinutes ?: 0
-
-                    val difficulty =
-                        when {
-                            recipe.readyInMinutes == null -> "fácil"
-                            minutes <= 20 -> "fácil"
-                            minutes <= 45 -> "media"
-                            else -> "difícil"
-                        }
-
-                    RecipePreview(
-                        title = recipe.title,
-                        time = "$minutes minutos",
-                        difficulty = difficulty,
-                        imageUrl = recipe.image,
-                        isSaved = false,
-                        onClick = {
-                            onRecipeClick(recipe.id)
-                        }
-                    )
-                }
-
-                item {
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        FilledIconButton(
-                            onClick = {
-                                coroutineScope.launch {
+                        Image(
+                            painter = painterResource(id = R.drawable.sad),
+                            contentDescription = "Sin resultados",
+                            modifier = Modifier.size(180.dp)
+                        )
 
-                                    try {
+                        Spacer(
+                            modifier = Modifier.height(24.dp)
+                        )
 
-                                        loadingMore = true
+                        Text(
+                            text = "Lo siento,",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.DarkGray
+                        )
 
-                                        val response = TestRepository.searchRecipes(
-                                            ingredients = ApiRecipeSearchState.ingredients,
-                                            restrictedIngredients = ApiRecipeSearchState.restrictedIngredients,
-                                            number = ApiRecipeSearchState.PAGE_SIZE,
-                                            offset = ApiRecipeSearchState.offset
-                                        )
+                        Spacer(
+                            modifier = Modifier.height(8.dp)
+                        )
 
-                                        recipes = recipes + response.results
+                        Text(
+                            text = "No hemos encontrado ninguna\ncoincidencia con tu búsqueda",
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Center,
+                            color = Color.Gray
+                        )
 
-                                        ApiRecipeSearchState.recipes = recipes
-                                        ApiRecipeSearchState.offset += ApiRecipeSearchState.PAGE_SIZE
+                        Spacer(
+                            modifier = Modifier.height(24.dp)
+                        )
 
-                                    } catch (_: Exception) {
+                        QCHButton(
+                            text = "Volver a buscar",
+                            color = QCHGreen,
+                            onClick = onBackClick,
+                            modifier = Modifier.fillMaxWidth(0.7f)
+                        )
+                    }
+                }
 
-                                        Toast.makeText(
-                                            context,
-                                            "Error al cargar más recetas",
-                                            Toast.LENGTH_LONG
-                                        ).show()
+            } else {
 
-                                    } finally {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
 
-                                        loadingMore = false
-                                    }
-                                }
-                            },
-                            enabled = !loadingMore,
-                            colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = QCHGreen
-                            ),
-                            modifier = Modifier.size(52.dp)
-                        ) {
+                    items(recipes) { recipe ->
 
-                            if (loadingMore) {
+                        val minutes = recipe.readyInMinutes ?: 0
 
-                                CircularProgressIndicator(
-                                    color = Color.White,
-                                    modifier = Modifier.size(24.dp),
-                                    strokeWidth = 2.dp
-                                )
-
-                            } else {
-
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Cargar más recetas",
-                                    tint = Color.White
-                                )
+                        val difficulty =
+                            when {
+                                recipe.readyInMinutes == null -> "fácil"
+                                minutes <= 20 -> "fácil"
+                                minutes <= 45 -> "media"
+                                else -> "difícil"
                             }
-                        }
+
+                        RecipePreview(
+                            title = recipe.title,
+                            time = "$minutes minutos",
+                            difficulty = difficulty,
+                            imageUrl = recipe.image,
+                            isSaved = false,
+                            onClick = {
+                                onRecipeClick(recipe.id)
+                            }
+                        )
                     }
 
-                    Spacer(modifier = Modifier.height(80.dp))
+                    item {
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+
+                            FilledIconButton(
+                                onClick = {
+                                    coroutineScope.launch {
+
+                                        try {
+
+                                            loadingMore = true
+
+                                            val response = TestRepository.searchRecipes(
+                                                ingredients = ApiRecipeSearchState.ingredients,
+                                                restrictedIngredients = ApiRecipeSearchState.restrictedIngredients,
+                                                number = ApiRecipeSearchState.PAGE_SIZE,
+                                                offset = ApiRecipeSearchState.offset
+                                            )
+
+                                            recipes = recipes + response.results
+
+                                            ApiRecipeSearchState.recipes = recipes
+                                            ApiRecipeSearchState.offset += ApiRecipeSearchState.PAGE_SIZE
+
+                                        } catch (_: Exception) {
+
+                                            Toast.makeText(
+                                                context,
+                                                "Error al cargar más recetas",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+
+                                        } finally {
+
+                                            loadingMore = false
+                                        }
+                                    }
+                                },
+                                enabled = !loadingMore,
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = QCHGreen
+                                ),
+                                modifier = Modifier.size(52.dp)
+                            ) {
+
+                                if (loadingMore) {
+
+                                    CircularProgressIndicator(
+                                        color = Color.White,
+                                        modifier = Modifier.size(24.dp),
+                                        strokeWidth = 2.dp
+                                    )
+
+                                } else {
+
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Cargar más recetas",
+                                        tint = Color.White
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(80.dp))
+                    }
                 }
             }
         }

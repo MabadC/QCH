@@ -2,7 +2,11 @@ package com.example.qchapp.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import com.example.qchapp.ui.components.BottomBar
 import com.example.qchapp.ui.components.ProfileOption
 import com.example.qchapp.ui.components.QCHButton
-import com.example.qchapp.ui.theme.*
 import com.example.qchapp.ui.components.TopBar
+import com.example.qchapp.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -25,13 +29,17 @@ fun ProfileScreen(
     onFavoritesClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onChangePasswordClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    onLoginClick: () -> Unit = {},
+    onEditUsernameClick: () -> Unit = {},
+    onDeleteAccountClick: () -> Unit = {},
+    onRegisterClick: () -> Unit = {}
 ) {
-    // Firebase para mostrar nombre de usuario y email
     val user = FirebaseAuth.getInstance().currentUser
 
-    val userName = user?.displayName ?: "Usuario QCH"
+    val isAnonymous = user == null || user.isAnonymous
 
+    val userName = user?.displayName ?: "Usuario QCH"
     val userEmail = user?.email ?: "Sin e-mail"
 
     Scaffold(
@@ -64,7 +72,6 @@ fun ProfileScreen(
                 )
             }
 
-
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
@@ -75,47 +82,110 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Icon(
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = "Usuario",
-                tint = QCHGreen,
-                modifier = Modifier.size(100.dp)
-            )
+            if (isAnonymous) {
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Usuario anónimo",
+                    tint = QCHGreen,
+                    modifier = Modifier.size(100.dp)
+                )
 
-            Text(
-                text = userName,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = userEmail,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
-            )
+                Text(
+                    text = "Estás usando QCH como invitado",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
 
-            Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            ProfileOption(
-                icon = Icons.Default.Lock,
-                text = "Cambiar contraseña",
-                onClick = onChangePasswordClick
-            )
+                Text(
+                    text = "Para acceder a tu perfil, guardar recetas y ver tus recetas guardadas, inicia sesión o crea una cuenta.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
 
-            Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(32.dp))
 
-            QCHButton(
-                text = "Cerrar sesión",
-                color = QCHOrange,
-                onClick = onLogoutClick,
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .height(Dimens.ButtonHeight)
-            )
+                QCHButton(
+                    text = "Iniciar sesión",
+                    color = QCHGreen,
+                    onClick = onLoginClick,
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(Dimens.ButtonHeight)
+                )
 
-            Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(14.dp))
+
+                QCHButton(
+                    text = "Crear cuenta",
+                    color = QCHOrange,
+                    onClick = onRegisterClick,
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(Dimens.ButtonHeight)
+                )
+
+            } else {
+
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "Usuario",
+                    tint = QCHGreen,
+                    modifier = Modifier.size(100.dp)
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = userName,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = userEmail,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                ProfileOption(
+                    icon = Icons.Default.Lock,
+                    text = "Cambiar contraseña",
+                    onClick = onChangePasswordClick
+                )
+
+                ProfileOption(
+                    icon = Icons.Default.Edit,
+                    text = "Cambiar nombre de usuario",
+                    onClick = onEditUsernameClick
+                )
+
+                ProfileOption(
+                    icon = Icons.Default.Delete,
+                    text = "Eliminar usuario",
+                    onClick = onDeleteAccountClick
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                QCHButton(
+                    text = "Cerrar sesión",
+                    color = QCHOrange,
+                    onClick = onLogoutClick,
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(Dimens.ButtonHeight)
+                )
+
+                Spacer(modifier = Modifier.height(28.dp))
+            }
         }
     }
 }
