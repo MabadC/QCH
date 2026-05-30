@@ -50,6 +50,7 @@ import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.data.FavoriteRecipe
 import com.example.qchapp.data.FavoriteRepository
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun ResultsScreen(
@@ -67,6 +68,25 @@ fun ResultsScreen(
         mutableStateOf(ApiRecipeSearchState.recipes)
     }
 
+    var savedRecipeIds by remember {
+        mutableStateOf<Set<Int>>(emptySet())
+    }
+
+    LaunchedEffect(Unit) {
+
+        FavoriteRepository.getFavorites(
+
+            onSuccess = { favorites ->
+
+                savedRecipeIds =
+                    favorites.map { it.id }.toSet()
+            },
+
+            onError = {
+                savedRecipeIds = emptySet()
+            }
+        )
+    }
 
     var loadingMore by remember {
         mutableStateOf(false)
@@ -158,6 +178,8 @@ fun ResultsScreen(
 
                     items(recipes) { recipe ->
 
+                        val isSaved = savedRecipeIds.contains(recipe.id)
+
                         val minutes = recipe.readyInMinutes ?: 0
 
                         val difficulty =
@@ -173,7 +195,7 @@ fun ResultsScreen(
                             time = "$minutes minutos",
                             difficulty = difficulty,
                             imageUrl = recipe.image,
-                            isSaved = false,
+                            isSaved = isSaved,
                             onClick = {
                                 onRecipeClick(recipe.id)
                             },
@@ -191,31 +213,62 @@ fun ResultsScreen(
                                     return@RecipePreview
                                 }
 
-                                val favoriteRecipe = FavoriteRecipe(
-                                    id = recipe.id,
-                                    title = recipe.title,
-                                    image = recipe.image ?: "",
-                                    readyInMinutes = recipe.readyInMinutes ?: 0,
-                                    servings = 1
-                                )
+                                if (isSaved) {
 
-                                FavoriteRepository.saveFavorite(
-                                    recipe = favoriteRecipe,
-                                    onSuccess = {
-                                        Toast.makeText(
-                                            context,
-                                            "Receta guardada correctamente",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    },
-                                    onError = {
-                                        Toast.makeText(
-                                            context,
-                                            "No se pudo guardar la receta",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                )
+                                    savedRecipeIds = savedRecipeIds - recipe.id
+
+                                    FavoriteRepository.deleteFavorite(
+                                        recipeId = recipe.id,
+                                        onSuccess = {
+                                            Toast.makeText(
+                                                context,
+                                                "Receta eliminada de favoritos",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        },
+                                        onError = {
+                                            savedRecipeIds = savedRecipeIds + recipe.id
+
+                                            Toast.makeText(
+                                                context,
+                                                "No se pudo eliminar la receta",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    )
+
+                                } else {
+
+                                    savedRecipeIds = savedRecipeIds + recipe.id
+
+                                    val favoriteRecipe = FavoriteRecipe(
+                                        id = recipe.id,
+                                        title = recipe.title,
+                                        image = recipe.image ?: "",
+                                        readyInMinutes = recipe.readyInMinutes ?: 0,
+                                        servings = 1
+                                    )
+
+                                    FavoriteRepository.saveFavorite(
+                                        recipe = favoriteRecipe,
+                                        onSuccess = {
+                                            Toast.makeText(
+                                                context,
+                                                "Receta guardada en favoritos",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        },
+                                        onError = {
+                                            savedRecipeIds = savedRecipeIds - recipe.id
+
+                                            Toast.makeText(
+                                                context,
+                                                "No se pudo guardar la receta",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    )
+                                }
                             }
                         )
                     }

@@ -13,7 +13,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.qchapp.data.RecipeRepository
 import com.example.qchapp.ui.components.BottomBar
 import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.components.RecipePreview
@@ -22,6 +21,8 @@ import com.example.qchapp.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.runtime.*
 import com.example.qchapp.data.FavoriteRecipe
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import com.example.qchapp.data.FavoriteRepository
 
 @Composable
@@ -35,6 +36,8 @@ fun SavedRecipesScreen(
 ) {
     val user = FirebaseAuth.getInstance().currentUser
     val isAnonymous = user == null || user.isAnonymous
+
+    val context = LocalContext.current
 
     var recipes by remember {
         mutableStateOf<List<FavoriteRecipe>>(emptyList())
@@ -135,7 +138,12 @@ fun SavedRecipesScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
 
-                    items(recipes) { recipe ->
+                    items(
+                        items = recipes,
+                        key = { recipe ->
+                            recipe.id
+                        }
+                    ) { recipe ->
 
                         RecipePreview(
                             title = recipe.title,
@@ -144,8 +152,35 @@ fun SavedRecipesScreen(
                             imageUrl = recipe.image,
                             isSaved = true,
                             showDelete = true,
-                            onClick = {
-                                onRecipeClick(recipe.id)
+                            onClick = { onRecipeClick(recipe.id)},
+                            onDeleteClick = {
+
+                                val deletedRecipe = recipe
+
+                                recipes = recipes.filter {
+                                    it.id != deletedRecipe.id
+                                }
+
+                                FavoriteRepository.deleteFavorite(
+                                    recipeId = deletedRecipe.id,
+                                    onSuccess = {
+                                        Toast.makeText(
+                                            context,
+                                            "Receta eliminada de favoritos",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    },
+                                    onError = {
+
+                                        recipes = recipes + deletedRecipe
+
+                                        Toast.makeText(
+                                            context,
+                                            "No se pudo eliminar la receta",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                )
                             }
                         )
                     }
