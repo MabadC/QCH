@@ -34,8 +34,8 @@ import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.theme.Dimens
 import com.example.qchapp.ui.theme.QCHGreen
 import kotlinx.coroutines.launch
-import com.example.qchapp.BuildConfig
 import com.example.qchapp.data.remote.ApiRecipeSearchState
+import com.example.qchapp.data.remote.TranslationRepository
 
 
 @Composable
@@ -222,9 +222,21 @@ fun SearchScreen(
 
                         try {
 
+                            /*val selectedIngredients = ingredients
+                                .map { it.trim() }
+                                .filter { it.isNotBlank() }
+
+                             */
                             val selectedIngredients = ingredients
                                 .map { it.trim() }
                                 .filter { it.isNotBlank() }
+
+                            val translatedIngredients =
+                                selectedIngredients.map { ingredient ->
+
+                                    TranslationRepository
+                                        .translateToEnglish(ingredient)
+                                }
 
                             val restricted = restrictedIngredients
                                 .map { it.trim() }
@@ -255,7 +267,8 @@ fun SearchScreen(
                             }
 
                             val response = TestRepository.searchRecipes(
-                                ingredients = selectedIngredients,
+                                //ingredients = selectedIngredients,
+                                ingredients = translatedIngredients, //probamos la traducción de ingredientes
                                 restrictedIngredients = restricted,
                                 number = ApiRecipeSearchState.PAGE_SIZE,
                                 offset = 0
@@ -274,7 +287,7 @@ fun SearchScreen(
 
                             onSearchRecipesClick()
 
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
 
                             onNetworkError()
                         }
