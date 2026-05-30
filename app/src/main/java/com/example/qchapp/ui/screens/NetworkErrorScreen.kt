@@ -17,7 +17,7 @@ import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.theme.*
 
 @Composable
-fun NetworkErrorScreen() {
+fun NetworkErrorScreen(onRetryClick: () -> Unit = {}) {
 
     Column(
         modifier = Modifier
@@ -94,8 +94,7 @@ fun NetworkErrorScreen() {
         QCHButton(
             text = "Reintentar",
             color = QCHGreen,
-            onClick = {},
-
+            onClick = onRetryClick,
             modifier = Modifier
                 .fillMaxWidth(0.9f)
                 .height(Dimens.ButtonHeight)
@@ -110,5 +109,7 @@ fun NetworkErrorScreen() {
 @Preview(showBackground = true)
 @Composable
 fun NetworkErrorScreenPreview() {
-    NetworkErrorScreen()
+    NetworkErrorScreen(
+        onRetryClick = {}
+    )
 }

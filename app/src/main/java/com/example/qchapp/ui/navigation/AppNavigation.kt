@@ -129,6 +129,9 @@ fun AppNavigation() {
                 },
                 onSearchRecipesClick = {
                     navController.navigate(Routes.RESULTS)
+                },
+                onNetworkError = {
+                    navController.navigate(Routes.NETWORK_ERROR)
                 }
             )
         }
@@ -279,7 +282,15 @@ fun AppNavigation() {
 
 
         composable(Routes.NETWORK_ERROR) {
-            NetworkErrorScreen()
+            NetworkErrorScreen(
+                onRetryClick = {
+                    navController.navigate(Routes.SEARCH) {
+                        popUpTo(Routes.NETWORK_ERROR) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
     }
 }

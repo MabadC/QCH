@@ -43,7 +43,8 @@ fun SearchScreen(
     onSearchClick: () -> Unit = {},
     onFavoritesClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
-    onSearchRecipesClick: () -> Unit = {}
+    onSearchRecipesClick: () -> Unit = {},
+    onNetworkError: () -> Unit = {}
 ) {
 
     var ingredients by remember {
@@ -265,8 +266,6 @@ fun SearchScreen(
                             ApiRecipeSearchState.restrictedIngredients = restricted
                             ApiRecipeSearchState.offset = ApiRecipeSearchState.PAGE_SIZE
 
-                            onSearchRecipesClick()
-
                             Toast.makeText(
                                 context,
                                 "Recetas encontradas: ${response.results.size}",
@@ -277,11 +276,7 @@ fun SearchScreen(
 
                         } catch (e: Exception) {
 
-                            Toast.makeText(
-                                context,
-                                "Error API: ${e.message}\nKey:${BuildConfig.SPOONACULAR_API_KEY.length}",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            onNetworkError()
                         }
                     }
                 },
