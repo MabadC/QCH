@@ -1,7 +1,6 @@
 package com.example.qchapp.ui.screens
 
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,10 +43,16 @@ import com.example.qchapp.data.remote.ApiRecipeDetail
 import com.example.qchapp.data.remote.TestRepository
 import com.example.qchapp.ui.components.BottomBar
 import com.example.qchapp.ui.components.RecipeInfo
-import com.example.qchapp.ui.components.TopBar
 import com.example.qchapp.ui.theme.Dimens
 import com.example.qchapp.ui.theme.QCHGreen
 import kotlinx.coroutines.launch
+import com.example.qchapp.data.FavoriteRecipe
+import com.example.qchapp.data.FavoriteRepository
+import com.example.qchapp.ui.components.TopBar
+import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material3.IconButton
+
 
 @Composable
 fun RecipeDetailsScreen(
@@ -55,8 +60,7 @@ fun RecipeDetailsScreen(
     onBackClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onFavoritesClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {},
-    onSaveClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -70,10 +74,19 @@ fun RecipeDetailsScreen(
         mutableStateOf(true)
     }
 
+    var isSaved by remember {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(recipeId) {
         coroutineScope.launch {
             try {
                 recipe = TestRepository.getRecipeInformation(recipeId)
+
+                FavoriteRepository.isFavorite(recipeId) { saved ->
+                    isSaved = saved
+                }
+
             } catch (e: Exception) {
                 Toast.makeText(
                     context,
@@ -106,28 +119,98 @@ fun RecipeDetailsScreen(
 
             Spacer(modifier = Modifier.height(36.dp))
 
+            TopBar(
+                onBackClick = onBackClick
+            )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.End
             ) {
 
-                TopBar(
-                    onBackClick = onBackClick,
-                    showSaveIcon = true,
-                    onSaveClick = onSaveClick
-                )
+                IconButton(
+                    onClick = {
 
-                Icon(
-                    imageVector = Icons.Default.BookmarkBorder,
-                    contentDescription = "Guardar",
-                    tint = QCHGreen,
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clickable {
-                            onSaveClick()
+                        val user = FirebaseAuth.getInstance().currentUser
+
+                        if (user == null || user.isAnonymous) {
+                            Toast.makeText(
+                                context,
+                                "Debes iniciar sesión para guardar recetas",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            return@IconButton
                         }
-                )
+
+                        val currentRecipe = recipe ?: return@IconButton
+
+                        if (isSaved) {
+
+                            isSaved = false
+
+                            FavoriteRepository.deleteFavorite(
+                                recipeId = currentRecipe.id,
+                                onSuccess = {
+                                    Toast.makeText(
+                                        context,
+                                        "Receta eliminada de favoritos",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                },
+                                onError = {
+                                    isSaved = true
+                                    Toast.makeText(
+                                        context,
+                                        "No se pudo eliminar la receta",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            )
+
+                        } else {
+
+                            isSaved = true
+
+                            val favoriteRecipe = FavoriteRecipe(
+                                id = currentRecipe.id,
+                                title = currentRecipe.title,
+                                image = currentRecipe.image ?: "",
+                                readyInMinutes = currentRecipe.readyInMinutes ?: 0,
+                                servings = currentRecipe.servings ?: 1
+                            )
+
+                            FavoriteRepository.saveFavorite(
+                                recipe = favoriteRecipe,
+                                onSuccess = {
+                                    Toast.makeText(
+                                        context,
+                                        "Receta guardada en favoritos",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                },
+                                onError = {
+                                    isSaved = false
+                                    Toast.makeText(
+                                        context,
+                                        "No se pudo guardar la receta",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            )
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector =
+                            if (isSaved)
+                                Icons.Default.Bookmark
+                            else
+                                Icons.Default.BookmarkBorder,
+                        contentDescription = "Guardar",
+                        tint = QCHGreen,
+                        modifier = Modifier.size(38.dp)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(20.dp))

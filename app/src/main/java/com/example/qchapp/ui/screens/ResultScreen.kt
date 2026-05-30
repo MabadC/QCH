@@ -47,6 +47,9 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.Image
 import com.example.qchapp.R
 import com.example.qchapp.ui.components.QCHButton
+import com.example.qchapp.data.FavoriteRecipe
+import com.example.qchapp.data.FavoriteRepository
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ResultsScreen(
@@ -63,6 +66,7 @@ fun ResultsScreen(
     var recipes by remember {
         mutableStateOf(ApiRecipeSearchState.recipes)
     }
+
 
     var loadingMore by remember {
         mutableStateOf(false)
@@ -172,6 +176,46 @@ fun ResultsScreen(
                             isSaved = false,
                             onClick = {
                                 onRecipeClick(recipe.id)
+                            },
+                            onSaveClick = {
+
+                                val user = FirebaseAuth.getInstance().currentUser
+
+                                if (user == null || user.isAnonymous) {
+                                    Toast.makeText(
+                                        context,
+                                        "Debes iniciar sesión para guardar recetas",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+
+                                    return@RecipePreview
+                                }
+
+                                val favoriteRecipe = FavoriteRecipe(
+                                    id = recipe.id,
+                                    title = recipe.title,
+                                    image = recipe.image ?: "",
+                                    readyInMinutes = recipe.readyInMinutes ?: 0,
+                                    servings = 1
+                                )
+
+                                FavoriteRepository.saveFavorite(
+                                    recipe = favoriteRecipe,
+                                    onSuccess = {
+                                        Toast.makeText(
+                                            context,
+                                            "Receta guardada correctamente",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    },
+                                    onError = {
+                                        Toast.makeText(
+                                            context,
+                                            "No se pudo guardar la receta",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                )
                             }
                         )
                     }

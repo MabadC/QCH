@@ -196,6 +196,9 @@ fun AppNavigation() {
                 onProfileClick = {
                     navController.navigate(Routes.PROFILE)
                 },
+                onLoginClick = {
+                    navController.navigate(Routes.LOGIN)
+                },
                 onRecipeClick = { recipeId ->
                     navController.navigate(
                         Routes.recipeDetails(recipeId)

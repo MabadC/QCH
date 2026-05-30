@@ -44,7 +44,7 @@ fun TopBar(
             modifier = Modifier.size(Dimens.TopBarLogoSize)
         )
 
-        if (showSaveIcon) {
+        /*if (showSaveIcon) {
             Icon(
                 imageVector = Icons.Default.BookmarkBorder,
                 contentDescription = "Guardar receta",
@@ -57,6 +57,6 @@ fun TopBar(
             )
         } else {
             Spacer(modifier = Modifier.size(38.dp))
-        }
+        }*/
     }
 }
