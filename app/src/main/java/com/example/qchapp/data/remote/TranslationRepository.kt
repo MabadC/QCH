@@ -17,6 +17,16 @@ object TranslationRepository {
         Translation.getClient(options)
     }
 
+    private val spanishTranslator by lazy {
+
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(TranslateLanguage.SPANISH)
+            .build()
+
+        Translation.getClient(options)
+    }
+
     suspend fun translateToEnglish(
         text: String
     ): String {
@@ -26,6 +36,19 @@ object TranslationRepository {
             .await()
 
         return englishTranslator
+            .translate(text)
+            .await()
+    }
+
+    suspend fun translateToSpanish(
+        text: String
+    ): String {
+
+        spanishTranslator
+            .downloadModelIfNeeded()
+            .await()
+
+        return spanishTranslator
             .translate(text)
             .await()
     }

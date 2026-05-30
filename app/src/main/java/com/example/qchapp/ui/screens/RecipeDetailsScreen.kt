@@ -52,6 +52,9 @@ import com.example.qchapp.ui.components.TopBar
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
+import com.example.qchapp.data.remote.TranslationRepository
+import androidx.compose.ui.graphics.Color
 
 
 @Composable
@@ -78,10 +81,46 @@ fun RecipeDetailsScreen(
         mutableStateOf(false)
     }
 
+    var translatedIngredients by remember {
+        mutableStateOf("")
+    }
+
+    var translatedInstructions by remember {
+        mutableStateOf("")
+    }
+
+    var showOriginalRecipe by remember {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(recipeId) {
         coroutineScope.launch {
             try {
                 recipe = TestRepository.getRecipeInformation(recipeId)
+
+                translatedIngredients =
+                    recipe?.extendedIngredients
+                        ?.mapNotNull { ingredient ->
+
+                            ingredient.original?.let {
+
+                                "• " + TranslationRepository
+                                    .translateToSpanish(it)
+                            }
+                        }
+                        ?.joinToString("\n")
+                        ?: ""
+
+                translatedInstructions =
+                    recipe?.instructions
+                        ?.replace(
+                            Regex("<.*?>"),
+                            ""
+                        )
+                        ?.let {
+                            TranslationRepository.translateToSpanish(it)
+                        }
+                        ?: ""
 
                 FavoriteRepository.isFavorite(recipeId) { saved ->
                     isSaved = saved
@@ -269,6 +308,27 @@ fun RecipeDetailsScreen(
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Traducción automática. Puede contener errores.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray
+                        )
+
+                        TextButton(
+                            onClick = {
+                                showOriginalRecipe = !showOriginalRecipe
+                            }
+                        ) {
+                            Text(
+                                text =
+                                    if (showOriginalRecipe)
+                                        "Ver traducción"
+                                    else
+                                        "Ver receta original"
+                            )
+                        }
 
                         Spacer(
                             modifier = Modifier.height(12.dp)
@@ -319,11 +379,31 @@ fun RecipeDetailsScreen(
                             modifier = Modifier.height(8.dp)
                         )
 
+                        /*
                         Text(
+
                             text = currentRecipe.extendedIngredients
                                 ?.mapNotNull { it.original }
                                 ?.joinToString("\n") { "• $it" }
                                 ?: "No hay ingredientes disponibles"
+                        )
+                        */
+
+                        Text(
+                            text =
+                                if (showOriginalRecipe) {
+                                    currentRecipe.extendedIngredients
+                                        ?.mapNotNull { it.original }
+                                        ?.joinToString("\n") { "• $it" }
+                                        ?: "No hay ingredientes disponibles"
+                                } else {
+                                    translatedIngredients.ifBlank {
+                                        currentRecipe.extendedIngredients
+                                            ?.mapNotNull { it.original }
+                                            ?.joinToString("\n") { "• $it" }
+                                            ?: "No hay ingredientes disponibles"
+                                    }
+                                }
                         )
 
                         Spacer(
@@ -340,6 +420,28 @@ fun RecipeDetailsScreen(
                         )
 
                         Text(
+                            text =
+                                if (showOriginalRecipe) {
+                                    currentRecipe.instructions
+                                        ?.replace(Regex("<.*?>"), "")
+                                        ?.ifBlank { "No hay instrucciones disponibles" }
+                                        ?: "No hay instrucciones disponibles"
+                                } else {
+                                    translatedInstructions.ifBlank {
+                                        currentRecipe.instructions
+                                            ?.replace(Regex("<.*?>"), "")
+                                            ?.ifBlank { "No hay instrucciones disponibles" }
+                                            ?: "No hay instrucciones disponibles"
+                                    }
+                                }
+                        )
+
+                        Spacer(
+                            modifier = Modifier.height(8.dp)
+                        )
+
+                        /*
+                        Text(
                             text = currentRecipe.instructions
                                 ?.replace(
                                     Regex("<.*?>"),
@@ -350,10 +452,8 @@ fun RecipeDetailsScreen(
                                 }
                                 ?: "No hay instrucciones disponibles"
                         )
+                        */
 
-                        Spacer(
-                            modifier = Modifier.height(80.dp)
-                        )
                     }
                 }
             }

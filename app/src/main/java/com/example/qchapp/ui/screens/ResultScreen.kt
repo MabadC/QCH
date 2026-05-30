@@ -51,6 +51,8 @@ import com.example.qchapp.data.FavoriteRecipe
 import com.example.qchapp.data.FavoriteRepository
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.runtime.LaunchedEffect
+//import com.example.qchapp.data.remote.TranslationRepository
+import com.example.qchapp.data.local.LocalRecipeSearchState
 
 @Composable
 fun ResultsScreen(
@@ -64,13 +66,26 @@ fun ResultsScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    var recipes by remember {
+    val isLocalMode =
+        LocalRecipeSearchState.isLocalMode
+
+    var apiRecipes by remember {
         mutableStateOf(ApiRecipeSearchState.recipes)
     }
+
+    val localRecipes =
+        LocalRecipeSearchState.recipes
 
     var savedRecipeIds by remember {
         mutableStateOf<Set<Int>>(emptySet())
     }
+
+    /*
+    var translatedTitles by remember {
+
+        mutableStateOf<Map<Int, String>>(emptyMap())
+    }
+    */
 
     LaunchedEffect(Unit) {
 
@@ -87,6 +102,25 @@ fun ResultsScreen(
             }
         )
     }
+
+    /* Traducción de titulos literal - lo elimino porque algunos titulos son confusos,
+     usaré la traducción literal en la vista detalle de las recetas (debajo del titulo original)
+     de forma orientativa como subtitulo pero manteniendo el titulo
+    LaunchedEffect(recipes) {
+
+        val translated =
+            recipes.associate { recipe ->
+
+                recipe.id to TranslationRepository.translateToSpanish(
+                    recipe.title
+                )
+            }
+
+        translatedTitles = translated
+    }
+
+     */
+
 
     var loadingMore by remember {
         mutableStateOf(false)
@@ -118,7 +152,7 @@ fun ResultsScreen(
                 onBackClick = onBackClick
             )
 
-            if (recipes.isEmpty()) {
+            if ((!isLocalMode && apiRecipes.isEmpty()) || (isLocalMode && localRecipes.isEmpty())) {
 
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -176,173 +210,201 @@ fun ResultsScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
-                    items(recipes) { recipe ->
+                    if (isLocalMode) {
 
-                        val isSaved = savedRecipeIds.contains(recipe.id)
+                        items(localRecipes) { recipe ->
 
-                        val minutes = recipe.readyInMinutes ?: 0
-
-                        val difficulty =
-                            when {
-                                recipe.readyInMinutes == null -> "fácil"
-                                minutes <= 20 -> "fácil"
-                                minutes <= 45 -> "media"
-                                else -> "difícil"
-                            }
-
-                        RecipePreview(
-                            title = recipe.title,
-                            time = "$minutes minutos",
-                            difficulty = difficulty,
-                            imageUrl = recipe.image,
-                            isSaved = isSaved,
-                            onClick = {
-                                onRecipeClick(recipe.id)
-                            },
-                            onSaveClick = {
-
-                                val user = FirebaseAuth.getInstance().currentUser
-
-                                if (user == null || user.isAnonymous) {
+                            RecipePreview(
+                                title = recipe.title,
+                                time = "${recipe.readyInMinutes} minutos",
+                                difficulty = recipe.difficulty,
+                                imageUrl = recipe.image,
+                                isSaved = false,
+                                onClick = {
                                     Toast.makeText(
                                         context,
-                                        "Debes iniciar sesión para guardar recetas",
+                                        "Detalle local pendiente de implementar",
                                         Toast.LENGTH_LONG
                                     ).show()
-
-                                    return@RecipePreview
-                                }
-
-                                if (isSaved) {
-
-                                    savedRecipeIds = savedRecipeIds - recipe.id
-
-                                    FavoriteRepository.deleteFavorite(
-                                        recipeId = recipe.id,
-                                        onSuccess = {
-                                            Toast.makeText(
-                                                context,
-                                                "Receta eliminada de favoritos",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        },
-                                        onError = {
-                                            savedRecipeIds = savedRecipeIds + recipe.id
-
-                                            Toast.makeText(
-                                                context,
-                                                "No se pudo eliminar la receta",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
-                                    )
-
-                                } else {
-
-                                    savedRecipeIds = savedRecipeIds + recipe.id
-
-                                    val favoriteRecipe = FavoriteRecipe(
-                                        id = recipe.id,
-                                        title = recipe.title,
-                                        image = recipe.image ?: "",
-                                        readyInMinutes = recipe.readyInMinutes ?: 0,
-                                        servings = 1
-                                    )
-
-                                    FavoriteRepository.saveFavorite(
-                                        recipe = favoriteRecipe,
-                                        onSuccess = {
-                                            Toast.makeText(
-                                                context,
-                                                "Receta guardada en favoritos",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        },
-                                        onError = {
-                                            savedRecipeIds = savedRecipeIds - recipe.id
-
-                                            Toast.makeText(
-                                                context,
-                                                "No se pudo guardar la receta",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
-                                    )
-                                }
-                            }
-                        )
-                    }
-
-                    item {
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-
-                            FilledIconButton(
-                                onClick = {
-                                    coroutineScope.launch {
-
-                                        try {
-
-                                            loadingMore = true
-
-                                            val response = TestRepository.searchRecipes(
-                                                ingredients = ApiRecipeSearchState.ingredients,
-                                                restrictedIngredients = ApiRecipeSearchState.restrictedIngredients,
-                                                number = ApiRecipeSearchState.PAGE_SIZE,
-                                                offset = ApiRecipeSearchState.offset
-                                            )
-
-                                            recipes = recipes + response.results
-
-                                            ApiRecipeSearchState.recipes = recipes
-                                            ApiRecipeSearchState.offset += ApiRecipeSearchState.PAGE_SIZE
-
-                                        } catch (_: Exception) {
-
-                                            Toast.makeText(
-                                                context,
-                                                "Error al cargar más recetas",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-
-                                        } finally {
-
-                                            loadingMore = false
-                                        }
-                                    }
                                 },
-                                enabled = !loadingMore,
-                                colors = IconButtonDefaults.filledIconButtonColors(
-                                    containerColor = QCHGreen
-                                ),
-                                modifier = Modifier.size(52.dp)
-                            ) {
-
-                                if (loadingMore) {
-
-                                    CircularProgressIndicator(
-                                        color = Color.White,
-                                        modifier = Modifier.size(24.dp),
-                                        strokeWidth = 2.dp
-                                    )
-
-                                } else {
-
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Cargar más recetas",
-                                        tint = Color.White
-                                    )
+                                onSaveClick = {
+                                    Toast.makeText(
+                                        context,
+                                        "Favoritos locales pendiente de implementar",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 }
-                            }
+                            )
                         }
 
-                        Spacer(modifier = Modifier.height(80.dp))
+                    } else {
+
+                        items(apiRecipes) { recipe ->
+
+                            val isSaved = savedRecipeIds.contains(recipe.id)
+
+                            val minutes = recipe.readyInMinutes ?: 0
+
+                            val difficulty =
+                                when {
+                                    recipe.readyInMinutes == null -> "fácil"
+                                    minutes <= 20 -> "fácil"
+                                    minutes <= 45 -> "media"
+                                    else -> "difícil"
+                                }
+
+                            RecipePreview(
+                                title = recipe.title,
+                                //title = translatedTitles[recipe.id] ?: recipe.title,
+                                time = "$minutes minutos",
+                                difficulty = difficulty,
+                                imageUrl = recipe.image,
+                                isSaved = isSaved,
+                                onClick = {
+                                    onRecipeClick(recipe.id)
+                                },
+                                onSaveClick = {
+
+                                    val user = FirebaseAuth.getInstance().currentUser
+
+                                    if (user == null || user.isAnonymous) {
+                                        Toast.makeText(
+                                            context,
+                                            "Debes iniciar sesión para guardar recetas",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+
+                                        return@RecipePreview
+                                    }
+
+                                    if (isSaved) {
+
+                                        savedRecipeIds = savedRecipeIds - recipe.id
+
+                                        FavoriteRepository.deleteFavorite(
+                                            recipeId = recipe.id,
+                                            onSuccess = {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Receta eliminada de favoritos",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            },
+                                            onError = {
+                                                savedRecipeIds = savedRecipeIds + recipe.id
+
+                                                Toast.makeText(
+                                                    context,
+                                                    "No se pudo eliminar la receta",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            }
+                                        )
+
+                                    } else {
+
+                                        savedRecipeIds = savedRecipeIds + recipe.id
+
+                                        val favoriteRecipe = FavoriteRecipe(
+                                            id = recipe.id,
+                                            title = recipe.title,
+                                            image = recipe.image ?: "",
+                                            readyInMinutes = recipe.readyInMinutes ?: 0,
+                                            servings = 1
+                                        )
+
+                                        FavoriteRepository.saveFavorite(
+                                            recipe = favoriteRecipe,
+                                            onSuccess = {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Receta guardada en favoritos",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            },
+                                            onError = {
+                                                savedRecipeIds = savedRecipeIds - recipe.id
+
+                                                Toast.makeText(
+                                                    context,
+                                                    "No se pudo guardar la receta",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            }
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    }
+                    if (!isLocalMode) {
+
+                        item {
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+
+                                FilledIconButton(
+                                    onClick = {
+                                        coroutineScope.launch {
+
+                                            try {
+                                                loadingMore = true
+
+                                                val response = TestRepository.searchRecipes(
+                                                    ingredients = ApiRecipeSearchState.ingredients,
+                                                    restrictedIngredients = ApiRecipeSearchState.restrictedIngredients,
+                                                    number = ApiRecipeSearchState.PAGE_SIZE,
+                                                    offset = ApiRecipeSearchState.offset
+                                                )
+
+                                                apiRecipes = apiRecipes + response.results
+
+                                                ApiRecipeSearchState.recipes = apiRecipes
+                                                ApiRecipeSearchState.offset += ApiRecipeSearchState.PAGE_SIZE
+
+                                            } catch (_: Exception) {
+
+                                                Toast.makeText(
+                                                    context,
+                                                    "Error al cargar más recetas",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+
+                                            } finally {
+                                                loadingMore = false
+                                            }
+                                        }
+                                    },
+                                    enabled = !loadingMore,
+                                    colors = IconButtonDefaults.filledIconButtonColors(
+                                        containerColor = QCHGreen
+                                    ),
+                                    modifier = Modifier.size(52.dp)
+                                ) {
+
+                                    if (loadingMore) {
+                                        CircularProgressIndicator(
+                                            color = Color.White,
+                                            modifier = Modifier.size(24.dp),
+                                            strokeWidth = 2.dp
+                                        )
+                                    } else {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = "Cargar más recetas",
+                                            tint = Color.White
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(80.dp))
+                        }
                     }
                 }
             }

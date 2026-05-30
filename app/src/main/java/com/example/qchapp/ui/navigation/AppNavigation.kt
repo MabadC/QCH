@@ -6,6 +6,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.qchapp.ui.screens.*
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.example.qchapp.data.local.LocalRecipeImporter
+import android.util.Log
+import com.example.qchapp.data.local.LocalRecipeRepository
 
 object Routes {
 
@@ -37,6 +42,18 @@ object Routes {
 fun AppNavigation() {
 
     val navController = rememberNavController()
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+
+        LocalRecipeImporter.importRecipes(context)
+
+        val count =
+            LocalRecipeRepository.getRecipesCount(context)
+
+        Log.d("ROOM_TEST", "Recetas en Room: $count")
+    }
 
     val currentUser = FirebaseAuth
         .getInstance()

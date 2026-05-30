@@ -36,6 +36,9 @@ import com.example.qchapp.ui.theme.QCHGreen
 import kotlinx.coroutines.launch
 import com.example.qchapp.data.remote.ApiRecipeSearchState
 import com.example.qchapp.data.remote.TranslationRepository
+import com.example.qchapp.data.local.LocalRecipeRepository
+import com.example.qchapp.data.local.LocalRecipeSearchState
+
 
 
 @Composable
@@ -289,7 +292,29 @@ fun SearchScreen(
 
                         } catch (_: Exception) {
 
-                            onNetworkError()
+                            val searchText =
+                                ingredients
+                                    .map { it.trim() }
+                                    .firstOrNull()
+                                    ?: ""
+
+                            val localResults =
+                                LocalRecipeRepository.searchRecipes(
+                                    context,
+                                    searchText
+                                )
+
+                            LocalRecipeSearchState.recipes = localResults
+                            LocalRecipeSearchState.isLocalMode = true
+                            LocalRecipeSearchState.searchQuery = searchText
+
+                            Toast.makeText(
+                                context,
+                                "Modo reducido activado",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                            onSearchRecipesClick()
                         }
                     }
                 },

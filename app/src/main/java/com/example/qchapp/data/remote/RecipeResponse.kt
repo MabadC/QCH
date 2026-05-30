@@ -20,7 +20,17 @@ data class ApiRecipeDetail(
     val readyInMinutes: Int?,
     val servings: Int?,
     val extendedIngredients: List<ApiIngredient>?,
-    val instructions: String?
+    val instructions: String?,
+    val analyzedInstructions: List<ApiAnalyzedInstruction>? = emptyList()
+)
+
+data class ApiAnalyzedInstruction(
+    val steps: List<ApiInstructionStep>? = emptyList()
+)
+
+data class ApiInstructionStep(
+    val number: Int?,
+    val step: String?
 )
 
 data class ApiIngredient(
