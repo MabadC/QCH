@@ -155,14 +155,12 @@ fun SavedRecipesScreen(
                             onClick = { onRecipeClick(recipe.id)},
                             onDeleteClick = {
 
-                                val deletedRecipe = recipe
-
                                 recipes = recipes.filter {
-                                    it.id != deletedRecipe.id
+                                    it.id != recipe.id
                                 }
 
                                 FavoriteRepository.deleteFavorite(
-                                    recipeId = deletedRecipe.id,
+                                    recipeId = recipe.id,
                                     onSuccess = {
                                         Toast.makeText(
                                             context,
@@ -172,7 +170,7 @@ fun SavedRecipesScreen(
                                     },
                                     onError = {
 
-                                        recipes = recipes + deletedRecipe
+                                        recipes = recipes + recipe
 
                                         Toast.makeText(
                                             context,

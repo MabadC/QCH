@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.QCHApp" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.QCHApp.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#FFFFFF</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/qch_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.QCHApp</item>
+    </style>
+
 </resources>
