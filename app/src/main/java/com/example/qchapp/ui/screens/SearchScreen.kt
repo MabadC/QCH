@@ -47,6 +47,7 @@ fun SearchScreen(
     onFavoritesClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSearchRecipesClick: () -> Unit = {},
+    onLocalResultsClick: () -> Unit = {},
     onNetworkError: () -> Unit = {}
 ) {
 
@@ -314,7 +315,7 @@ fun SearchScreen(
                                 Toast.LENGTH_LONG
                             ).show()
 
-                            onSearchRecipesClick()
+                            onLocalResultsClick()
                         }
                     }
                 },

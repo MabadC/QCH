@@ -26,6 +26,7 @@ fun RecipePreview(
     imageUrl: String? = null,
     image: Int = R.drawable.recipe_placeholder,
     isSaved: Boolean = false,
+    showSaveIcon: Boolean = true,
     showDelete: Boolean = false,
     onSaveClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
@@ -70,25 +71,28 @@ fun RecipePreview(
                 )
             }
 
-            IconButton(
-                onClick =
-                    if (showDelete)
-                        onDeleteClick
-                    else
-                        onSaveClick
-            ) {
-                Icon(
-                    imageVector =
+            if (showSaveIcon || showDelete) {
+
+                IconButton(
+                    onClick =
                         if (showDelete)
-                            Icons.Default.Delete
-                        else if (isSaved)
-                            Icons.Default.Bookmark
+                            onDeleteClick
                         else
-                            Icons.Default.BookmarkBorder,
-                    contentDescription = null,
-                    tint = QCHGreen,
-                    modifier = Modifier.size(34.dp)
-                )
+                            onSaveClick
+                ) {
+                    Icon(
+                        imageVector =
+                            if (showDelete)
+                                Icons.Default.Delete
+                            else if (isSaved)
+                                Icons.Default.Bookmark
+                            else
+                                Icons.Default.BookmarkBorder,
+                        contentDescription = null,
+                        tint = QCHGreen,
+                        modifier = Modifier.size(34.dp)
+                    )
+                }
             }
         }
     }

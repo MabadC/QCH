@@ -9,32 +9,33 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.example.qchapp.data.local.LocalRecipeImporter
-import android.util.Log
-import com.example.qchapp.data.local.LocalRecipeRepository
-
+import android.widget.Toast
 object Routes {
 
     const val WELCOME = "welcome"
     const val LOGIN = "login"
     const val REGISTER = "register"
     const val PASSWORD_RECOVERY = "password_recovery"
-
     const val SEARCH = "search"
     const val RESULTS = "results"
     const val RECIPE_DETAILS = "recipe_details/{recipeId}"
-
     const val SAVED_RECIPES = "saved_recipes"
     const val PROFILE = "profile"
     const val CHANGE_PASSWORD = "change_password"
-
     const val EDIT_USERNAME = "edit_username"
-
     const val DELETE_ACCOUNT = "delete_account"
-
     const val NETWORK_ERROR = "network_error"
+
+    const val LOCAL_RESULTS = "local_results"
+
+    const val LOCAL_RECIPE_DETAILS = "local_recipe_details/{recipeId}"
 
     fun recipeDetails(recipeId: Int): String {
         return "recipe_details/$recipeId"
+    }
+
+    fun localRecipeDetails(recipeId: Int): String {
+        return "local_recipe_details/$recipeId"
     }
 }
 
@@ -49,10 +50,6 @@ fun AppNavigation() {
 
         LocalRecipeImporter.importRecipes(context)
 
-        val count =
-            LocalRecipeRepository.getRecipesCount(context)
-
-        Log.d("ROOM_TEST", "Recetas en Room: $count")
     }
 
     val currentUser = FirebaseAuth
@@ -94,15 +91,11 @@ fun AppNavigation() {
                 },
 
                 onLoginSuccess = {
-                    navController.navigate(
-                        Routes.SEARCH
-                    )
+                    navController.navigate(Routes.SEARCH)
                 },
 
                 onForgotPasswordClick = {
-                    navController.navigate(
-                        Routes.PASSWORD_RECOVERY
-                    )
+                    navController.navigate(Routes.PASSWORD_RECOVERY)
                 }
             )
         }
@@ -137,6 +130,9 @@ fun AppNavigation() {
             SearchScreen(
                 onSearchClick = {
                     navController.navigate(Routes.SEARCH)
+                },
+                onLocalResultsClick = {
+                    navController.navigate(Routes.LOCAL_RESULTS)
                 },
                 onFavoritesClick = {
                     navController.navigate(Routes.SAVED_RECIPES)
@@ -178,6 +174,35 @@ fun AppNavigation() {
             )
         }
 
+        composable(Routes.LOCAL_RESULTS) {
+            LocalResultsScreen(
+                onBackClick = {
+                    navController.popBackStack(
+                        route = Routes.SEARCH,
+                        inclusive = false
+                    )
+                },
+                onSearchClick = {
+                    navController.navigate(Routes.SEARCH)
+                },
+                onFavoritesClick = {
+                    Toast.makeText(
+                        context,
+                        "Los favoritos no están disponibles en modo reducido",
+                        Toast.LENGTH_LONG
+                    ).show()
+                },
+                onProfileClick = {
+                    navController.navigate(Routes.PROFILE)
+                },
+                onRecipeClick = { recipeId ->
+                    navController.navigate(
+                        Routes.localRecipeDetails(recipeId)
+                    )
+                }
+            )
+        }
+
         composable(Routes.RECIPE_DETAILS) { backStackEntry ->
 
             val recipeId = backStackEntry.arguments
@@ -198,6 +223,21 @@ fun AppNavigation() {
                 },
                 onProfileClick = {
                     navController.navigate(Routes.PROFILE)
+                }
+            )
+        }
+
+        composable(Routes.LOCAL_RECIPE_DETAILS) { backStackEntry ->
+
+            val recipeId = backStackEntry.arguments
+                ?.getString("recipeId")
+                ?.toIntOrNull()
+                ?: 1
+
+            LocalRecipeDetailsScreen(
+                recipeId = recipeId,
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }
