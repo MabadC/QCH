@@ -42,4 +42,43 @@ object LocalRecipeRepository {
     ): Int {
         return dao(context).getRecipesCount()
     }
+
+    suspend fun searchRecipesByIngredients(
+        context: Context,
+        ingredients: List<String>,
+        excludedIngredients: List<String>
+    ): List<LocalRecipeEntity> {
+
+        val recipes = getAllRecipes(context)
+
+        return recipes
+            .filter { recipe ->
+
+                excludedIngredients.none { excluded ->
+
+                    excluded.isNotBlank() &&
+                            recipe.ingredients.contains(
+                                excluded,
+                                ignoreCase = true
+                            )
+                }
+            }
+            .map { recipe ->
+
+                val matches =
+                    ingredients.count { ingredient ->
+
+                        ingredient.isNotBlank() &&
+                                recipe.ingredients.contains(
+                                    ingredient,
+                                    ignoreCase = true
+                                )
+                    }
+
+                recipe to matches
+            }
+            .filter { it.second > 0 }
+            .sortedByDescending { it.second }
+            .map { it.first }
+    }
 }

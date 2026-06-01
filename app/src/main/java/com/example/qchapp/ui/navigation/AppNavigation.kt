@@ -1,5 +1,6 @@
 package com.example.qchapp.ui.navigation
 
+//import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,7 +10,10 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.example.qchapp.data.local.LocalRecipeImporter
+import com.example.qchapp.data.local.LocalRecipeCsvImporter
 import android.widget.Toast
+//import com.example.qchapp.data.local.LocalRecipeRepository
+
 object Routes {
 
     const val WELCOME = "welcome"
@@ -49,6 +53,17 @@ fun AppNavigation() {
     LaunchedEffect(Unit) {
 
         LocalRecipeImporter.importRecipes(context)
+
+        LocalRecipeCsvImporter.importRecipes(context)
+
+        /* comprobación de que han cargado las recetas locales.
+        Log.d(
+
+            "ROOM_TEST",
+            "Recetas en Room: ${
+                LocalRecipeRepository.getRecipesCount(context)
+            }"
+        ) */
 
     }
 

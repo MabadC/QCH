@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
 import com.example.qchapp.data.local.LocalRecipeEntity
 import com.example.qchapp.data.local.LocalRecipeRepository
 import com.example.qchapp.ui.components.TopBar
@@ -117,7 +118,11 @@ fun LocalRecipeDetailsScreen(
             modifier = Modifier.height(8.dp)
         )
 
-        Text(currentRecipe.ingredients)
+        Text(
+            text = currentRecipe.ingredients,
+            style = MaterialTheme.typography.bodyLarge,
+            lineHeight = 24.sp
+        )
 
         Spacer(
             modifier = Modifier.height(20.dp)
@@ -133,7 +138,19 @@ fun LocalRecipeDetailsScreen(
             modifier = Modifier.height(8.dp)
         )
 
-        Text(currentRecipe.instructions)
+        currentRecipe.instructions
+            .split(Regex("\\d+\\s"))
+            .filter { it.isNotBlank() }
+            .forEachIndexed { index, step ->
+
+                Text(
+                    text = "${index + 1}. ${step.trim()}"
+                )
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+            }
 
         Spacer(
             modifier = Modifier.height(80.dp)

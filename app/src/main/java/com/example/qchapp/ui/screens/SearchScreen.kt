@@ -40,7 +40,6 @@ import com.example.qchapp.data.local.LocalRecipeRepository
 import com.example.qchapp.data.local.LocalRecipeSearchState
 
 
-
 @Composable
 fun SearchScreen(
     onSearchClick: () -> Unit = {},
@@ -192,27 +191,27 @@ fun SearchScreen(
             Spacer(
                 modifier = Modifier.height(40.dp)
             )
-/*
-// inhabilito para probar la API
-            QCHButton(
-                text = "Buscar recetas",
-                color = QCHGreen,
-                onClick = {
-                    RecipeSearchState.ingredients = ingredients
-                        .map { it.trim().lowercase() }
-                        .filter { it.isNotBlank() }
+            /*
+            // inhabilito para probar la API
+                        QCHButton(
+                            text = "Buscar recetas",
+                            color = QCHGreen,
+                            onClick = {
+                                RecipeSearchState.ingredients = ingredients
+                                    .map { it.trim().lowercase() }
+                                    .filter { it.isNotBlank() }
 
-                    RecipeSearchState.restrictedIngredients = restrictedIngredients
-                        .map { it.trim().lowercase() }
-                        .filter { it.isNotBlank() }
+                                RecipeSearchState.restrictedIngredients = restrictedIngredients
+                                    .map { it.trim().lowercase() }
+                                    .filter { it.isNotBlank() }
 
-                    onSearchRecipesClick()
-                },
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .height(Dimens.ButtonHeight)
-            )
-            */
+                                onSearchRecipesClick()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth(0.9f)
+                                .height(Dimens.ButtonHeight)
+                        )
+                        */
 
             // prueba busqueda API
 
@@ -293,21 +292,27 @@ fun SearchScreen(
 
                         } catch (_: Exception) {
 
-                            val searchText =
+                            val searchIngredients =
                                 ingredients
                                     .map { it.trim() }
-                                    .firstOrNull()
-                                    ?: ""
+                                    .filter { it.isNotBlank() }
+
+                            val searchRestrictedIngredients =
+                                restrictedIngredients
+                                    .map { it.trim() }
+                                    .filter { it.isNotBlank() }
 
                             val localResults =
-                                LocalRecipeRepository.searchRecipes(
+                                LocalRecipeRepository.searchRecipesByIngredients(
                                     context,
-                                    searchText
+                                    searchIngredients,
+                                    searchRestrictedIngredients
                                 )
 
                             LocalRecipeSearchState.recipes = localResults
                             LocalRecipeSearchState.isLocalMode = true
-                            LocalRecipeSearchState.searchQuery = searchText
+                            LocalRecipeSearchState.searchQuery =
+                                searchIngredients.joinToString(", ")
 
                             Toast.makeText(
                                 context,
