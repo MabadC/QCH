@@ -31,8 +31,6 @@ fun NetworkErrorScreen(onRetryClick: () -> Unit = {}) {
             modifier = Modifier.height(60.dp)
         )
 
-        // Logo gris
-
         Image(
             painter = painterResource(
                 id = R.drawable.qch_logo_bnw
@@ -46,8 +44,6 @@ fun NetworkErrorScreen(onRetryClick: () -> Unit = {}) {
             modifier = Modifier.height(40.dp)
         )
 
-        // Título
-
         Text(
             text = "Error de red",
             style = MaterialTheme.typography.headlineMedium,
@@ -57,8 +53,6 @@ fun NetworkErrorScreen(onRetryClick: () -> Unit = {}) {
         Spacer(
             modifier = Modifier.height(35.dp)
         )
-
-        // Icono sin conexión
 
         Image(
             painter = painterResource(
@@ -72,8 +66,6 @@ fun NetworkErrorScreen(onRetryClick: () -> Unit = {}) {
         Spacer(
             modifier = Modifier.height(35.dp)
         )
-
-        // Texto explicación
 
         Text(
             text =
@@ -89,7 +81,6 @@ fun NetworkErrorScreen(onRetryClick: () -> Unit = {}) {
             modifier = Modifier.weight(1f)
         )
 
-        // Botón
 
         QCHButton(
             text = "Reintentar",

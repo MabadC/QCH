@@ -19,7 +19,6 @@ object Dimens {
 
     // Flecha navegación
     val BackArrowSize = 40.dp
-    val BackArrowPadding = 20.dp
 
     // TopBars
     val TopBarTopPadding = 36.dp

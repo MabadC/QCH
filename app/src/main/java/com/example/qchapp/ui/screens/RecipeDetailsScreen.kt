@@ -98,6 +98,7 @@ fun RecipeDetailsScreen(
             try {
                 recipe = TestRepository.getRecipeInformation(recipeId)
 
+                // Traduce ingredientes mediante ML Kit para mostrar la receta en español.
                 translatedIngredients =
                     recipe?.extendedIngredients
                         ?.mapNotNull { ingredient ->
@@ -111,6 +112,7 @@ fun RecipeDetailsScreen(
                         ?.joinToString("\n")
                         ?: ""
 
+                // Traduce instrucciones mediante ML Kit para mostrar la receta en español.
                 translatedInstructions =
                     recipe?.instructions
                         ?.replace(
@@ -316,6 +318,8 @@ fun RecipeDetailsScreen(
                             color = Color.Gray
                         )
 
+                        // Se mantiene acceso al contenido original para compensar posibles errores
+                        // detectados en la traducción automática.
                         TextButton(
                             onClick = {
                                 showOriginalRecipe = !showOriginalRecipe
@@ -337,6 +341,7 @@ fun RecipeDetailsScreen(
                         val minutes =
                             currentRecipe.readyInMinutes ?: 0
 
+                        // La API no proporciona dificultad, por lo que se calcula a partir del tiempo de preparación.
                         val difficulty =
                             when {
                                 currentRecipe.readyInMinutes == null -> "fácil"
@@ -378,16 +383,6 @@ fun RecipeDetailsScreen(
                         Spacer(
                             modifier = Modifier.height(8.dp)
                         )
-
-                        /*
-                        Text(
-
-                            text = currentRecipe.extendedIngredients
-                                ?.mapNotNull { it.original }
-                                ?.joinToString("\n") { "• $it" }
-                                ?: "No hay ingredientes disponibles"
-                        )
-                        */
 
                         Text(
                             text =
@@ -439,21 +434,6 @@ fun RecipeDetailsScreen(
                         Spacer(
                             modifier = Modifier.height(8.dp)
                         )
-
-                        /*
-                        Text(
-                            text = currentRecipe.instructions
-                                ?.replace(
-                                    Regex("<.*?>"),
-                                    ""
-                                )
-                                ?.ifBlank {
-                                    "No hay instrucciones disponibles"
-                                }
-                                ?: "No hay instrucciones disponibles"
-                        )
-                        */
-
                     }
                 }
             }

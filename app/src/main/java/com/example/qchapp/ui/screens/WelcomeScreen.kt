@@ -39,9 +39,6 @@ fun WelcomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
-        // Logo
-
         Image(
             painter = painterResource(id = R.drawable.qch_logo),
             contentDescription = "QCH Logo",
@@ -51,8 +48,6 @@ fun WelcomeScreen(
         Spacer(
             modifier = Modifier.height(Dimens.SmallSpacing)
         )
-
-        // Nombre aplicación - QCH
 
         Text(
             text = "QCH",
@@ -64,8 +59,6 @@ fun WelcomeScreen(
         Spacer(
             modifier = Modifier.height(Dimens.ExtraLargeSpacing)
         )
-
-        // Texto presentación
 
         Text(
             text = "¿Qué cocino hoy?",
@@ -86,8 +79,6 @@ fun WelcomeScreen(
             modifier = Modifier.height(Dimens.ExtraLargeSpacing)
         )
 
-        // Botón iniciar sesión
-
         QCHButton(
             text = "INICIAR SESIÓN",
             color = QCHGreen,
@@ -101,8 +92,6 @@ fun WelcomeScreen(
             modifier = Modifier.height(Dimens.MediumSpacing)
         )
 
-        // Botón registrarse
-
         QCHButton(
             text = "REGISTRARSE",
             color = QCHOrange,
@@ -114,8 +103,6 @@ fun WelcomeScreen(
         Spacer(
             modifier = Modifier.height(Dimens.MediumSpacing)
         )
-
-        // Botón usuario anónimo
 
         OutlinedButton(
             onClick = onGuestClick,

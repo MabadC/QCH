@@ -43,6 +43,7 @@ fun SavedRecipesScreen(
         mutableStateOf<List<FavoriteRecipe>>(emptyList())
     }
 
+    // Carga las recetas favoritas almacenadas en Firestore
     LaunchedEffect(Unit) {
 
         FavoriteRepository.getFavorites(
@@ -92,6 +93,7 @@ fun SavedRecipesScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Los usuarios invitados pueden consultar recetas, pero no acceder a favoritos sincronizados
             if (isAnonymous) {
 
                 Spacer(modifier = Modifier.height(60.dp))

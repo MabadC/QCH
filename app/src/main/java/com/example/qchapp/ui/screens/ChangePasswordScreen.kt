@@ -177,6 +177,7 @@ fun ChangePasswordScreen(
                     return@QCHButton
                 }
 
+                // Firebase requiere reautenticar al usuario antes de permitir cambios como la contraseña.
                 user?.reauthenticate(credential)
                     ?.addOnCompleteListener { reauthTask ->
 

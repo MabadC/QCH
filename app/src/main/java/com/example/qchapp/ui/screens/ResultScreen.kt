@@ -97,9 +97,8 @@ fun ResultsScreen(
         )
     }
 
-    /* Traducción de titulos literal - lo elimino porque algunos titulos son confusos,
-     usaré la traducción literal en la vista detalle de las recetas (debajo del titulo original)
-     de forma orientativa como subtitulo pero manteniendo el titulo
+    /* Traducción de titulos literal - lo elimino porque algunos titulos son confusos.
+
     LaunchedEffect(recipes) {
 
         val translated =
@@ -209,6 +208,7 @@ fun ResultsScreen(
 
                         val minutes = recipe.readyInMinutes ?: 0
 
+                        // La API no proporciona dificultad, por lo que se calcula a partir del tiempo de preparación.
                         val difficulty =
                             when {
                                 recipe.readyInMinutes == null -> "fácil"

@@ -18,12 +18,14 @@ import androidx.compose.ui.unit.dp
 import com.example.qchapp.ui.components.QCHButton
 import com.example.qchapp.ui.components.QCHTextField
 import com.example.qchapp.ui.theme.*
-//Firebase
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import com.example.qchapp.ui.components.TopBarLogo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun RegisterScreen(
@@ -36,6 +38,8 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var checked by remember { mutableStateOf(false) }
+    var showTermsDialog by remember { mutableStateOf(false) }
+    var termsOpened by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
 
@@ -54,8 +58,6 @@ fun RegisterScreen(
             onBackClick = onBackClick
         )
 
-        // Nombre App - QCH
-
         Text(
             text = "QCH",
             color = QCHGreen,
@@ -65,8 +67,6 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Título de pantalla
-
         Text(
             text = "Crear cuenta",
             style = MaterialTheme.typography.headlineSmall,
@@ -74,8 +74,6 @@ fun RegisterScreen(
         )
 
         Spacer(modifier = Modifier.height(32.dp))
-
-        // Campos formulario
 
         QCHTextField(
             value = name,
@@ -112,15 +110,20 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Checkbox términos y condiciones
-
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             Checkbox(
                 checked = checked,
-                onCheckedChange = { checked = it },
+                onCheckedChange = { isChecked ->
+
+                    if (!termsOpened && isChecked) {
+                        showTermsDialog = true
+                    } else {
+                        checked = isChecked
+                    }
+                },
                 colors = CheckboxDefaults.colors(
                     checkedColor = QCHGreen
                 )
@@ -138,13 +141,14 @@ fun RegisterScreen(
                     ) {
                         append("términos y condiciones")
                     }
+                },
+                modifier = Modifier.clickable {
+                    showTermsDialog = true
                 }
             )
         }
 
         Spacer(modifier = Modifier.height(28.dp))
-
-        // Botón crear cuenta
 
         QCHButton(
             text =
@@ -233,8 +237,6 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        // Pie de pantalla
-
         Text(
             text = buildAnnotatedString {
                 withStyle(
@@ -257,8 +259,65 @@ fun RegisterScreen(
             }
         )
     }
-}
 
+    // Términos y condiciones
+    if (showTermsDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showTermsDialog = false
+            },
+            title = {
+                Text("Términos y condiciones")
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .height(300.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = """
+                        Al crear una cuenta en QCH aceptas utilizar la aplicación de forma responsable.
+
+                        QCH permite buscar recetas, consultar información culinaria y guardar recetas favoritas asociadas a tu cuenta.
+
+                        Los datos de usuario se utilizan únicamente para permitir el inicio de sesión, la gestión del perfil y la sincronización de recetas favoritas.
+
+                        Las recetas mostradas pueden proceder de servicios externos, por lo que la información puede variar o contener errores.
+
+                        La traducción automática puede no ser exacta. Se recomienda revisar la receta original cuando sea necesario.
+
+                        QCH no sustituye asesoramiento profesional nutricional, médico o dietético.
+
+                        Puedes cerrar sesión o eliminar tu cuenta desde el perfil de usuario.
+                    """.trimIndent(),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        termsOpened = true
+                        checked = true
+                        showTermsDialog = false
+                    }
+                ) {
+                    Text("Aceptar")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showTermsDialog = false
+                    }
+                ) {
+                    Text("Cerrar")
+                }
+            }
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

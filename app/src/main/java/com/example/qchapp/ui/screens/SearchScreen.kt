@@ -191,29 +191,6 @@ fun SearchScreen(
             Spacer(
                 modifier = Modifier.height(40.dp)
             )
-            /*
-            // inhabilito para probar la API
-                        QCHButton(
-                            text = "Buscar recetas",
-                            color = QCHGreen,
-                            onClick = {
-                                RecipeSearchState.ingredients = ingredients
-                                    .map { it.trim().lowercase() }
-                                    .filter { it.isNotBlank() }
-
-                                RecipeSearchState.restrictedIngredients = restrictedIngredients
-                                    .map { it.trim().lowercase() }
-                                    .filter { it.isNotBlank() }
-
-                                onSearchRecipesClick()
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth(0.9f)
-                                .height(Dimens.ButtonHeight)
-                        )
-                        */
-
-            // prueba busqueda API
 
             QCHButton(
                 text = "Buscar recetas",
@@ -225,15 +202,12 @@ fun SearchScreen(
 
                         try {
 
-                            /*val selectedIngredients = ingredients
-                                .map { it.trim() }
-                                .filter { it.isNotBlank() }
-
-                             */
                             val selectedIngredients = ingredients
                                 .map { it.trim() }
                                 .filter { it.isNotBlank() }
 
+                            // Spoonacular trabaja en inglés, por lo que los ingredientes
+                            // introducidos por el usuario se traducen antes de la búsqueda.
                             val translatedIngredients =
                                 selectedIngredients.map { ingredient ->
 
@@ -270,8 +244,7 @@ fun SearchScreen(
                             }
 
                             val response = TestRepository.searchRecipes(
-                                //ingredients = selectedIngredients,
-                                ingredients = translatedIngredients, //probamos la traducción de ingredientes
+                                ingredients = translatedIngredients,
                                 restrictedIngredients = restricted,
                                 number = ApiRecipeSearchState.PAGE_SIZE,
                                 offset = 0
@@ -291,6 +264,9 @@ fun SearchScreen(
                             onSearchRecipesClick()
 
                         } catch (_: Exception) {
+
+                            // Si la API no está disponible, se realiza la búsqueda
+                            // sobre el catálogo local y se activa el modo reducido.
 
                             val searchIngredients =
                                 ingredients
@@ -329,7 +305,7 @@ fun SearchScreen(
                     .fillMaxWidth(0.9f)
                     .height(Dimens.ButtonHeight)
             )
-            // Fin prueba búsqueda API
+
             Spacer(
                 modifier = Modifier.height(12.dp)
             )

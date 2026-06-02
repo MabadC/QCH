@@ -1,6 +1,5 @@
 package com.example.qchapp.ui.screens
 
-//Firebase
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -72,8 +71,6 @@ fun LoginScreen(
             modifier = Modifier.height(Dimens.SmallSpacing)
         )
 
-        // Nombre App - QCH
-
         Text(
             text = "QCH",
             color = QCHGreen,
@@ -85,8 +82,6 @@ fun LoginScreen(
             modifier = Modifier.height(24.dp)
         )
 
-        // Título de pantalla
-
         Text(
             text = "Iniciar sesión",
             style = MaterialTheme.typography.headlineSmall,
@@ -96,8 +91,6 @@ fun LoginScreen(
         Spacer(
             modifier = Modifier.height(32.dp)
         )
-
-        // Campos formulario
 
         QCHTextField(
             value = email,
@@ -128,8 +121,6 @@ fun LoginScreen(
             modifier = Modifier.height(20.dp)
         )
 
-        // Recuperar contraseña
-
         Text(
             text = "¿Has olvidado tu contraseña?",
             color = QCHGreen,
@@ -142,8 +133,6 @@ fun LoginScreen(
         Spacer(
             modifier = Modifier.height(28.dp)
         )
-
-        // Botón principal
 
         QCHButton(
 
@@ -212,8 +201,6 @@ fun LoginScreen(
         Spacer(
             modifier = Modifier.height(28.dp)
         )
-
-// Pie de pantalla
 
         Text(
             text = buildAnnotatedString {

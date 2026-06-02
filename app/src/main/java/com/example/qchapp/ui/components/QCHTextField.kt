@@ -15,11 +15,11 @@ import androidx.compose.material.icons.filled.VisibilityOff
 
 @Composable
 fun QCHTextField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
     icon: ImageVector? = null,
-    modifier: Modifier = Modifier,
     isPassword: Boolean = false,
     passwordVisible: Boolean = false,
     onPasswordVisibilityChange: (() -> Unit)? = null

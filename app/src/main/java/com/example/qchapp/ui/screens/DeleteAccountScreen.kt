@@ -80,6 +80,7 @@ fun DeleteAccountScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Se solicita confirmar el correo electrónico para evitar eliminar la cuenta por error.
         QCHTextField(
             value = emailConfirmation,
             onValueChange = {
