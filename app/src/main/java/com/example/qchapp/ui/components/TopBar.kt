@@ -37,20 +37,5 @@ fun TopBar(
             contentDescription = "QCH Logo",
             modifier = Modifier.size(Dimens.TopBarLogoSize)
         )
-
-        /*if (showSaveIcon) {
-            Icon(
-                imageVector = Icons.Default.BookmarkBorder,
-                contentDescription = "Guardar receta",
-                tint = QCHGreen,
-                modifier = Modifier
-                    .size(38.dp)
-                    .clickable {
-                        onSaveClick()
-                    }
-            )
-        } else {
-            Spacer(modifier = Modifier.size(38.dp))
-        }*/
     }
 }

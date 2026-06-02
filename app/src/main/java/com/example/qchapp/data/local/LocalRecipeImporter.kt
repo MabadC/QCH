@@ -12,6 +12,7 @@ object LocalRecipeImporter {
             .getDatabase(context)
             .localRecipeDao()
 
+        // Evita importar las recetas locales más de una vez.
         if (dao.getRecipesCount() > 0) {
             return
         }

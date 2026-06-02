@@ -51,6 +51,7 @@ object LocalRecipeRepository {
 
         val recipes = getAllRecipes(context)
 
+        // Filtra recetas excluyendo ingredientes restringidos, las ordena por orden de coincidencia
         return recipes
             .filter { recipe ->
 
