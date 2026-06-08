@@ -38,6 +38,7 @@ import com.example.qchapp.data.remote.ApiRecipeSearchState
 import com.example.qchapp.data.remote.TranslationRepository
 import com.example.qchapp.data.local.LocalRecipeRepository
 import com.example.qchapp.data.local.LocalRecipeSearchState
+import com.example.qchapp.validation.Validations
 
 
 @Composable
@@ -202,9 +203,10 @@ fun SearchScreen(
 
                         try {
 
-                            val selectedIngredients = ingredients
-                                .map { it.trim() }
-                                .filter { it.isNotBlank() }
+                            val validations = Validations()
+
+                            val selectedIngredients =
+                                validations.cleanIngredients(ingredients)
 
                             // Spoonacular trabaja en inglés, por lo que los ingredientes
                             // introducidos por el usuario se traducen antes de la búsqueda.

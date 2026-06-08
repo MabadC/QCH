@@ -26,6 +26,8 @@ import com.google.firebase.auth.userProfileChangeRequest
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import com.example.qchapp.validation.Validations
+
 
 @Composable
 fun RegisterScreen(
@@ -161,20 +163,18 @@ fun RegisterScreen(
 
             onClick = {
 
-                if (
-                    name.isBlank() ||
-                    email.isBlank() ||
-                    password.isBlank()
-                ) {
+                val validations = Validations()
 
-                    Toast.makeText(
-                        context,
-                        "Completa todos los campos",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                if (!validations.isRegisterFormValid(name, email, password, checked)){
 
-                    return@QCHButton
-                }
+                        Toast.makeText(
+                            context,
+                            "Completa todos los campos",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return@QCHButton
+                    }
 
                 if (!checked) {
 
@@ -298,6 +298,7 @@ fun RegisterScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
+
                         termsOpened = true
                         checked = true
                         showTermsDialog = false
