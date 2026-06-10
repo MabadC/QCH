@@ -157,9 +157,6 @@ fun AppNavigation() {
                 onSearchRecipesClick = {
                     navController.navigate(Routes.RESULTS)
                 },
-                onNetworkError = {
-                    navController.navigate(Routes.NETWORK_ERROR)
-                }
             )
         }
 

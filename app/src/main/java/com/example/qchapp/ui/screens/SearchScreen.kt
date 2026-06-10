@@ -47,8 +47,7 @@ fun SearchScreen(
     onFavoritesClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSearchRecipesClick: () -> Unit = {},
-    onLocalResultsClick: () -> Unit = {},
-    onNetworkError: () -> Unit = {}
+    onLocalResultsClick: () -> Unit = {}
 ) {
 
     var ingredients by remember {
@@ -253,15 +252,9 @@ fun SearchScreen(
                             )
 
                             ApiRecipeSearchState.recipes = response.results
-                            ApiRecipeSearchState.ingredients = selectedIngredients
+                            ApiRecipeSearchState.ingredients = translatedIngredients
                             ApiRecipeSearchState.restrictedIngredients = restricted
                             ApiRecipeSearchState.offset = ApiRecipeSearchState.PAGE_SIZE
-
-                            Toast.makeText(
-                                context,
-                                "Recetas encontradas: ${response.results.size}",
-                                Toast.LENGTH_LONG
-                            ).show()
 
                             onSearchRecipesClick()
 

@@ -25,6 +25,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.*
+import androidx.compose.material3.Button
 @Composable
 fun LocalResultsScreen(
     onBackClick: () -> Unit = {},
@@ -37,6 +39,10 @@ fun LocalResultsScreen(
     val context = LocalContext.current
 
     val localRecipes = LocalRecipeSearchState.recipes
+
+    var visibleCount by remember {
+        mutableStateOf(10)
+    }
 
     Scaffold(
         bottomBar = {
@@ -107,7 +113,7 @@ fun LocalResultsScreen(
 
             LazyColumn {
 
-                items(localRecipes) { recipe ->
+                items(localRecipes.take(visibleCount)) { recipe ->
 
                     RecipePreview(
                         title = recipe.title,
@@ -129,6 +135,23 @@ fun LocalResultsScreen(
                             ).show()
                         }
                     )
+                }
+
+                if (visibleCount < localRecipes.size) {
+
+                    item {
+
+                        Button(
+                            onClick = {
+                                visibleCount += 10
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        ) {
+                            Text("+")
+                        }
+                    }
                 }
             }
 
