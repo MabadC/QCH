@@ -204,11 +204,11 @@ fun SearchScreen(
 
                             val validations = Validations()
 
+                            // Spoonacular trabaja en inglés, por lo que los ingredientes
+                            // introducidos por el usuario se traducen antes de la búsqueda.
                             val selectedIngredients =
                                 validations.cleanIngredients(ingredients)
 
-                            // Spoonacular trabaja en inglés, por lo que los ingredientes
-                            // introducidos por el usuario se traducen antes de la búsqueda.
                             val translatedIngredients =
                                 selectedIngredients.map { ingredient ->
 
@@ -219,6 +219,11 @@ fun SearchScreen(
                             val restricted = restrictedIngredients
                                 .map { it.trim() }
                                 .filter { it.isNotBlank() }
+
+                            val translatedRestrictedIngredients =
+                                restricted.map { ingredient ->
+                                    TranslationRepository.translateToEnglish(ingredient)
+                                }
 
                             if (
                                 selectedIngredients.isEmpty() &&
@@ -246,14 +251,14 @@ fun SearchScreen(
 
                             val response = TestRepository.searchRecipes(
                                 ingredients = translatedIngredients,
-                                restrictedIngredients = restricted,
+                                restrictedIngredients = translatedRestrictedIngredients,
                                 number = ApiRecipeSearchState.PAGE_SIZE,
                                 offset = 0
                             )
 
                             ApiRecipeSearchState.recipes = response.results
                             ApiRecipeSearchState.ingredients = translatedIngredients
-                            ApiRecipeSearchState.restrictedIngredients = restricted
+                            ApiRecipeSearchState.restrictedIngredients = translatedRestrictedIngredients
                             ApiRecipeSearchState.offset = ApiRecipeSearchState.PAGE_SIZE
 
                             onSearchRecipesClick()
