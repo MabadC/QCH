@@ -12,7 +12,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.qchapp.data.local.LocalRecipeImporter
 import com.example.qchapp.data.local.LocalRecipeCsvImporter
 import android.widget.Toast
-//import com.example.qchapp.data.local.LocalRecipeRepository
 
 object Routes {
 
@@ -208,7 +207,11 @@ fun AppNavigation() {
                     ).show()
                 },
                 onProfileClick = {
-                    navController.navigate(Routes.PROFILE)
+                    Toast.makeText(
+                        context,
+                        "El perfil no está disponible en modo reducido",
+                        Toast.LENGTH_LONG
+                    ).show()
                 },
                 onRecipeClick = { recipeId ->
                     navController.navigate(
