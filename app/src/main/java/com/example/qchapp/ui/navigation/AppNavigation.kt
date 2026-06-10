@@ -253,6 +253,20 @@ fun AppNavigation() {
                 recipeId = recipeId,
                 onBackClick = {
                     navController.popBackStack()
+                },
+                onFavoritesClick = {
+                    Toast.makeText(
+                        context,
+                        "Los favoritos no están disponibles en modo reducido",
+                        Toast.LENGTH_LONG
+                    ).show()
+                },
+                onProfileClick = {
+                    Toast.makeText(
+                        context,
+                        "El perfil no está disponible en modo reducido",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             )
         }
