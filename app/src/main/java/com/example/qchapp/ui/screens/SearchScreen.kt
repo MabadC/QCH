@@ -39,6 +39,8 @@ import com.example.qchapp.data.remote.TranslationRepository
 import com.example.qchapp.data.local.LocalRecipeRepository
 import com.example.qchapp.data.local.LocalRecipeSearchState
 import com.example.qchapp.validation.Validations
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 
 @Composable
@@ -76,7 +78,8 @@ fun SearchScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = Dimens.ScreenPadding),
+                .padding(horizontal = Dimens.ScreenPadding)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
