@@ -62,7 +62,7 @@ https://qch-app-9f234.web.app/
 
 ## Descarga APK
 
-[Descargar APK]([https://qch-app-9f234.web.app/](https://github.com/MabadC/QCH/releases/download/v1.0/QCH.apk)
+[Descargar APK] (https://github.com/MabadC/QCH/releases/download/v1.0/QCH.apk)
 
 ---
 
