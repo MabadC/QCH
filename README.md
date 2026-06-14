@@ -1,4 +1,4 @@
-# 🍳 ¿Qué Cocino Hoy? (QCH)
+# ¿Qué Cocino Hoy? (QCH)
 
 Aplicación Android desarrollada en Kotlin (AndroidStudio) que ayuda a encontrar recetas a partir de los ingredientes disponibles.
 
@@ -34,7 +34,7 @@ El objetivo de QCH es facilitar la planificación diaria de comidas, permitiendo
 
 ---
 
-## 📸 Capturas de pantalla
+## Capturas de pantalla
 
 ### Pantalla principal
 
